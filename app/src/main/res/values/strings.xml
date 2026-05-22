@@ -1,0 +1,156 @@
+<resources>
+    <string name="app_name">InnovateCorp</string>
+
+    <!-- Login -->
+    <string name="login_welcome">Bem-vindo de volta!</string>
+    <string name="login_title">Entrar na sua conta</string>
+    <string name="login_email_label">E-mail</string>
+    <string name="login_email_hint">seu@email.com</string>
+    <string name="login_password_label">Senha</string>
+    <string name="login_forgot_password">Esqueceu sua senha?</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_first_time">Primeira vez aqui?</string>
+    <string name="login_know_brand">Conheça o InnovateCorp</string>
+    <string name="login_copyright">© 2026 InnovateCorp. Todos os direitos reservados.</string>
+    <string name="login_error_email">Informe um e-mail válido.</string>
+    <string name="login_accounts_hint">Contas de demonstração: operador@innovatecorp.com · gestor@innovatecorp.com · lideranca@innovatecorp.com</string>
+    <string name="login_password_hint">Senha conforme seu perfil (oper123, gest123 ou lider123)</string>
+
+    <!-- Perfil -->
+    <string name="profile_title">Selecione seu perfil</string>
+    <string name="profile_subtitle">Escolha como você deseja acessar a plataforma</string>
+    <string name="profile_footer">Você pode trocar de perfil depois nas configurações</string>
+    <string name="profile_operator_title">Operador</string>
+    <string name="profile_operator_desc">Sugira ideias, reporte problemas e acompanhe suas contribuições.</string>
+    <string name="profile_manager_title">Gestor</string>
+    <string name="profile_manager_desc">Avalie ideias, gerencie projetos e coordene iniciativas.</string>
+    <string name="profile_leader_title">Liderança</string>
+    <string name="profile_leader_desc">Acompanhe métricas estratégicas e gerencie orientações corporativas.</string>
+    <string name="profile_loading">Carregando perfis…</string>
+    <string name="profile_error">Não foi possível carregar os perfis. Verifique a internet.</string>
+    <string name="profile_retry">Tentar novamente</string>
+
+    <!-- Operador — Home -->
+    <string name="operator_nav_home">Início</string>
+    <string name="operator_nav_strategies">Estratégias</string>
+    <string name="operator_nav_ideas">Ideias</string>
+    <string name="operator_nav_profile">Perfil</string>
+    <string name="operator_greeting">Olá, %1$s! 👋</string>
+    <string name="operator_motivation">Suas ideias importam</string>
+    <string name="operator_gamification">Você está no nível %1$d com %2$d pontos</string>
+    <string name="operator_quick_actions">Ações rápidas</string>
+    <string name="operator_action_new_idea">Nova Ideia</string>
+    <string name="operator_action_report">Reportar Problema</string>
+    <string name="operator_kpi_submitted">Ideias enviadas</string>
+    <string name="operator_kpi_approved">Aprovadas</string>
+    <string name="operator_insight_title">Insight do dia</string>
+    <string name="operator_guideline_title">Orientação estratégica</string>
+    <string name="operator_recent_ideas">Suas ideias recentes</string>
+    <string name="operator_view_all">Ver todas</string>
+    <string name="operator_no_ideas">Nenhuma ideia enviada ainda.</string>
+
+    <!-- Operador — Ideias -->
+    <string name="operator_ideas_list_title">Minhas ideias</string>
+    <string name="operator_ideas_empty">Você ainda não enviou ideias. Comece pela primeira!</string>
+    <string name="operator_ideas_form_title">Nova ideia / problema</string>
+    <string name="operator_ideas_field_title">Título</string>
+    <string name="operator_ideas_field_description">Descrição</string>
+    <string name="operator_ideas_field_category">Categoria</string>
+    <string name="operator_ideas_submit">Enviar</string>
+    <string name="operator_ideas_cancel">Cancelar</string>
+    <string name="idea_status_pending">Pendente</string>
+    <string name="idea_status_approved">Aprovada</string>
+    <string name="idea_status_rejected">Reprovada</string>
+    <string name="idea_status_prioritized">Priorizada</string>
+    <string name="operator_profile_hint">Perfil do operador</string>
+    <string name="operator_strategies_title">Estratégias corporativas</string>
+    <string name="operator_strategies_subtitle">Orientações definidas pela liderança para alinhar suas ideias.</string>
+    <string name="operator_strategies_empty">Nenhuma diretriz cadastrada ainda.</string>
+    <string name="profile_stats_title">Resumo da conta</string>
+    <string name="gamification_level_title">Nível %1$d</string>
+    <string name="gamification_points">%1$d pontos</string>
+    <string name="gamification_next_level">Envie mais %1$d ideia(s) para subir de nível</string>
+    <string name="gamification_max_level">Nível máximo alcançado!</string>
+
+    <!-- Home placeholders (outros perfis) -->
+    <string name="home_operator_title">Início — Operador</string>
+    <string name="home_manager_title">Dashboard Gestor</string>
+    <string name="home_leader_title">Dashboard Executivo</string>
+    <string name="home_placeholder_message">Área principal do perfil — conteúdo completo na Etapa 5/6/7.</string>
+    <string name="home_logout">Sair</string>
+    <string name="home_logout_account">Sair da conta</string>
+    <string name="home_logout_hint">Para testar outro perfil, saia e use o e-mail correspondente no login.</string>
+    <string name="home_greeting">Olá, %1$s!</string>
+
+    <!-- Gestor -->
+    <string name="manager_nav_home">Início</string>
+    <string name="manager_nav_curation">Curadoria</string>
+    <string name="manager_nav_projects">Projetos</string>
+    <string name="manager_nav_guidelines">Orientações</string>
+    <string name="manager_greeting">Olá, %1$s!</string>
+    <string name="manager_header_subtitle">Painel tático de inovação</string>
+    <string name="manager_pending_count">%1$d pendentes</string>
+    <string name="manager_active_projects">%1$d projetos ativos</string>
+    <string name="manager_kpi_ideas">Ideias no mês</string>
+    <string name="manager_kpi_approval">Taxa de aprovação</string>
+    <string name="manager_chart_title">Ideias por mês</string>
+    <string name="manager_curation_title">Curadoria de ideias</string>
+    <string name="manager_curation_empty">Nenhuma ideia registrada ainda.</string>
+    <string name="manager_action_approve">Aprovar</string>
+    <string name="manager_action_reject">Reprovar</string>
+    <string name="manager_action_prioritize">Priorizar</string>
+    <string name="manager_guidelines_title">Orientações estratégicas</string>
+    <string name="manager_guidelines_empty">Nenhuma orientação cadastrada.</string>
+    <string name="manager_profile_pending">Ideias pendentes</string>
+    <string name="manager_profile_active_projects">Projetos ativos</string>
+    <string name="manager_profile_total_ideas">Total de ideias</string>
+    <string name="manager_projects_title">Projetos de inovação</string>
+    <string name="manager_projects_empty">Nenhum projeto ainda. Aprove ideias e crie projetos pelo +.</string>
+    <string name="manager_project_create_title">Novo projeto</string>
+    <string name="manager_project_select_idea">Ideia aprovada</string>
+    <string name="manager_project_no_eligible_ideas">Não há ideias aprovadas sem projeto. Aprove ideias na Curadoria.</string>
+    <string name="manager_project_create_confirm">Criar</string>
+    <string name="manager_project_edit_title">Editar projeto</string>
+    <string name="manager_project_field_status">Status</string>
+    <string name="manager_project_field_investment">Investimento (R$)</string>
+    <string name="manager_project_field_profit">Lucro obtido (R$)</string>
+    <string name="manager_project_field_productivity">Ganho de produtividade (%)</string>
+    <string name="manager_project_field_deadline_days">Prazo (dias a partir de hoje)</string>
+    <string name="manager_project_save">Salvar</string>
+    <string name="manager_project_delete">Excluir</string>
+    <string name="manager_project_financials">Invest.: %1$s · Lucro: %2$s</string>
+    <string name="manager_project_deadline">Prazo: %1$s</string>
+
+    <!-- Líder -->
+    <string name="leader_nav_home">Executivo</string>
+    <string name="leader_nav_guidelines">Diretrizes</string>
+    <string name="leader_nav_tracking">Acompanhamento</string>
+    <string name="leader_greeting">Olá, %1$s!</string>
+    <string name="leader_header_subtitle">Visão estratégica de inovação</string>
+    <string name="leader_kpi_investment">Investimento total</string>
+    <string name="leader_kpi_roi">ROI geral</string>
+    <string name="leader_kpi_profit">Lucro: %1$s</string>
+    <string name="leader_kpi_active">%1$d projetos ativos</string>
+    <string name="leader_kpi_productivity">Produtividade média</string>
+    <string name="leader_kpi_completed">%1$d concluídos</string>
+    <string name="leader_kpi_projects">Portfólio</string>
+    <string name="leader_kpi_portfolio_hint">Dados dos gestores</string>
+    <string name="leader_chart_status_title">Projetos por status</string>
+    <string name="leader_chart_empty">Cadastre projetos como gestor para ver o gráfico.</string>
+    <string name="leader_tracking_title">Acompanhamento de projetos</string>
+    <string name="leader_tracking_empty">Nenhum projeto cadastrado.</string>
+    <string name="leader_tracking_investment">Investimento: %1$s</string>
+    <string name="leader_tracking_profit">Lucro obtido: %1$s</string>
+    <string name="leader_tracking_roi">ROI: %1$s%%</string>
+    <string name="leader_tracking_productivity">Produtividade: %1$s%%</string>
+    <string name="leader_tracking_deadline">Prazo: %1$s</string>
+    <string name="leader_guidelines_title">Diretrizes estratégicas</string>
+    <string name="leader_guidelines_empty">Crie a primeira diretriz com o botão +.</string>
+    <string name="leader_guideline_form_create">Nova diretriz</string>
+    <string name="leader_guideline_form_edit">Editar diretriz</string>
+    <string name="leader_guideline_field_title">Título</string>
+    <string name="leader_guideline_field_content">Conteúdo</string>
+    <string name="leader_guideline_save">Salvar</string>
+    <string name="leader_guideline_edit">Editar</string>
+    <string name="leader_guideline_delete">Excluir</string>
+</resources>
