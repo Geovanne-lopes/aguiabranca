@@ -2,8 +2,10 @@
     <string name="app_name">InnovateCorp</string>
 
     <!-- Login -->
+    <string name="login_tagline">Um workspace vivo para ideias, projetos e decisões.</string>
     <string name="login_welcome">Bem-vindo de volta!</string>
-    <string name="login_title">Entrar na sua conta</string>
+    <string name="login_title">👋 Entrar na sua conta</string>
+    <string name="login_demo_hint">Escolha um perfil demo abaixo. Use as contas de demonstração do desafio.</string>
     <string name="login_email_label">E-mail</string>
     <string name="login_email_hint">seu@email.com</string>
     <string name="login_password_label">Senha</string>

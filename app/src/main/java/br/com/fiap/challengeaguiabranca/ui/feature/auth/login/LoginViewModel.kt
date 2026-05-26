@@ -32,6 +32,24 @@ class LoginViewModel(
         _uiState.update { it.copy(password = value, errorMessage = null) }
     }
 
+    fun applyDemoAccount(role: UserRole) {
+        val account = AuthCatalog.findByEmail(
+            when (role) {
+                UserRole.OPERATOR -> "operador@innovatecorp.com"
+                UserRole.MANAGER -> "gestor@innovatecorp.com"
+                UserRole.LEADER -> "lideranca@innovatecorp.com"
+            }
+        ) ?: return
+        _uiState.update {
+            it.copy(
+                email = account.email,
+                password = account.password,
+                errorMessage = null,
+                successMessage = null
+            )
+        }
+    }
+
     fun openAbout() {
         _uiState.update { it.copy(mode = LoginMode.ABOUT, errorMessage = null, successMessage = null) }
     }

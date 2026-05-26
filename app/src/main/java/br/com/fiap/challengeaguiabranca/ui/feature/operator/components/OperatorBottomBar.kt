@@ -7,15 +7,22 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.home.OperatorTab
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateBorderColor
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateSurfaceColor
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
 import br.com.fiap.challengeaguiabranca.ui.util.NavAuraIcon
 
@@ -24,12 +31,18 @@ fun OperatorBottomBar(
     selectedTab: OperatorTab,
     onTabSelected: (OperatorTab) -> Unit
 ) {
-    NavigationBar {
+    val accent = currentRoleAccent().accent
+    NavigationBar(
+        containerColor = innovateSurfaceColor(),
+        tonalElevation = 0.dp,
+        modifier = Modifier.height(64.dp),
+        windowInsets = NavigationBarDefaults.windowInsets
+    ) {
         NavigationBarItem(
             selected = selectedTab == OperatorTab.HOME,
             onClick = { onTabSelected(OperatorTab.HOME) },
             icon = {
-                NavAuraIcon(selectedTab == OperatorTab.HOME, InnovatePrimary) {
+                NavAuraIcon(selectedTab == OperatorTab.HOME, accent) {
                     Icon(Icons.Default.Home, contentDescription = null)
                 }
             },
@@ -40,7 +53,7 @@ fun OperatorBottomBar(
             selected = selectedTab == OperatorTab.STRATEGIES,
             onClick = { onTabSelected(OperatorTab.STRATEGIES) },
             icon = {
-                NavAuraIcon(selectedTab == OperatorTab.STRATEGIES, InnovatePrimary) {
+                NavAuraIcon(selectedTab == OperatorTab.STRATEGIES, accent) {
                     Icon(Icons.Outlined.TrackChanges, contentDescription = null)
                 }
             },
@@ -51,7 +64,7 @@ fun OperatorBottomBar(
             selected = selectedTab == OperatorTab.IDEAS,
             onClick = { onTabSelected(OperatorTab.IDEAS) },
             icon = {
-                NavAuraIcon(selectedTab == OperatorTab.IDEAS, InnovatePrimary) {
+                NavAuraIcon(selectedTab == OperatorTab.IDEAS, accent) {
                     Icon(Icons.Default.Lightbulb, contentDescription = null)
                 }
             },
@@ -62,7 +75,7 @@ fun OperatorBottomBar(
             selected = selectedTab == OperatorTab.PROFILE,
             onClick = { onTabSelected(OperatorTab.PROFILE) },
             icon = {
-                NavAuraIcon(selectedTab == OperatorTab.PROFILE, InnovatePrimary) {
+                NavAuraIcon(selectedTab == OperatorTab.PROFILE, accent) {
                     Icon(Icons.Default.Person, contentDescription = null)
                 }
             },
@@ -74,9 +87,9 @@ fun OperatorBottomBar(
 
 @Composable
 private fun navItemColors() = NavigationBarItemDefaults.colors(
-    selectedIconColor = InnovatePrimary,
-    selectedTextColor = InnovatePrimary,
-    indicatorColor = InnovatePrimary.copy(alpha = 0.12f),
+    selectedIconColor = currentRoleAccent().accent,
+    selectedTextColor = currentRoleAccent().accent,
+    indicatorColor = currentRoleAccent().accentSoft,
     unselectedIconColor = InnovateTextSecondary,
     unselectedTextColor = InnovateTextSecondary
 )

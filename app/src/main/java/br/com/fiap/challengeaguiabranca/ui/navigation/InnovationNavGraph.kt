@@ -14,7 +14,8 @@ import br.com.fiap.challengeaguiabranca.ui.feature.operator.home.OperatorHomeScr
 fun InnovationNavGraph(
     navController: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onToggleTheme: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -27,7 +28,8 @@ fun InnovationNavGraph(
                     navController.navigate(route) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
-                }
+                },
+                onToggleTheme = onToggleTheme
             )
         }
 

@@ -1,5 +1,6 @@
 package br.com.fiap.challengeaguiabranca.ui.feature.leader.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Groups
@@ -8,14 +9,18 @@ import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.ui.feature.leader.LeaderTab
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLeaderPurple
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateSurfaceColor
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
 import br.com.fiap.challengeaguiabranca.ui.util.NavAuraIcon
 
@@ -24,12 +29,18 @@ fun LeaderBottomBar(
     selectedTab: LeaderTab,
     onTabSelected: (LeaderTab) -> Unit
 ) {
-    NavigationBar {
+    val accent = currentRoleAccent().accent
+    NavigationBar(
+        containerColor = innovateSurfaceColor(),
+        tonalElevation = 0.dp,
+        modifier = Modifier.height(64.dp),
+        windowInsets = NavigationBarDefaults.windowInsets
+    ) {
         NavigationBarItem(
             selected = selectedTab == LeaderTab.HOME,
             onClick = { onTabSelected(LeaderTab.HOME) },
             icon = {
-                NavAuraIcon(selectedTab == LeaderTab.HOME, InnovateLeaderPurple) {
+                NavAuraIcon(selectedTab == LeaderTab.HOME, accent) {
                     Icon(Icons.Default.Dashboard, null)
                 }
             },
@@ -40,7 +51,7 @@ fun LeaderBottomBar(
             selected = selectedTab == LeaderTab.GUIDELINES,
             onClick = { onTabSelected(LeaderTab.GUIDELINES) },
             icon = {
-                NavAuraIcon(selectedTab == LeaderTab.GUIDELINES, InnovateLeaderPurple) {
+                NavAuraIcon(selectedTab == LeaderTab.GUIDELINES, accent) {
                     Icon(Icons.Outlined.MenuBook, null)
                 }
             },
@@ -51,7 +62,7 @@ fun LeaderBottomBar(
             selected = selectedTab == LeaderTab.TEAM,
             onClick = { onTabSelected(LeaderTab.TEAM) },
             icon = {
-                NavAuraIcon(selectedTab == LeaderTab.TEAM, InnovateLeaderPurple) {
+                NavAuraIcon(selectedTab == LeaderTab.TEAM, accent) {
                     Icon(Icons.Default.Groups, null)
                 }
             },
@@ -62,7 +73,7 @@ fun LeaderBottomBar(
             selected = selectedTab == LeaderTab.TRACKING,
             onClick = { onTabSelected(LeaderTab.TRACKING) },
             icon = {
-                NavAuraIcon(selectedTab == LeaderTab.TRACKING, InnovateLeaderPurple) {
+                NavAuraIcon(selectedTab == LeaderTab.TRACKING, accent) {
                     Icon(Icons.Default.TrackChanges, null)
                 }
             },
@@ -73,7 +84,7 @@ fun LeaderBottomBar(
             selected = selectedTab == LeaderTab.PROFILE,
             onClick = { onTabSelected(LeaderTab.PROFILE) },
             icon = {
-                NavAuraIcon(selectedTab == LeaderTab.PROFILE, InnovateLeaderPurple) {
+                NavAuraIcon(selectedTab == LeaderTab.PROFILE, accent) {
                     Icon(Icons.Default.Person, null)
                 }
             },
@@ -85,9 +96,9 @@ fun LeaderBottomBar(
 
 @Composable
 private fun navColors() = NavigationBarItemDefaults.colors(
-    selectedIconColor = InnovateLeaderPurple,
-    selectedTextColor = InnovateLeaderPurple,
-    indicatorColor = InnovateLeaderPurple.copy(alpha = 0.12f),
+    selectedIconColor = currentRoleAccent().accent,
+    selectedTextColor = currentRoleAccent().accent,
+    indicatorColor = currentRoleAccent().accentSoft,
     unselectedIconColor = InnovateTextSecondary,
     unselectedTextColor = InnovateTextSecondary
 )

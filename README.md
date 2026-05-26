@@ -328,7 +328,7 @@ Respostas esperadas ao violar perfil: **`403 Forbidden`** (corpo com código, ex
 
 ### Preview no navegador (somente visualização)
 
-O app Android em `app/` **não é alterado**. A pasta `web-preview/` espelha login, cores e telas principais para você navegar no browser.
+O app Android e o `web-preview/` compartilham a mesma identidade visual InnovateCorp (paleta, tema por perfil, login com chips demo, cards e navegação). O preview web serve para navegar no browser; o Android é o app completo com Room e APIs.
 
 **Requisito:** [Node.js](https://nodejs.org/) instalado.
 

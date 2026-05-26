@@ -44,7 +44,8 @@ import br.com.fiap.challengeaguiabranca.ui.components.SimpleBarChart
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.KpiStatCard
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimaryDark
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
 import org.koin.androidx.compose.koinViewModel
 
@@ -63,7 +64,7 @@ fun ManagerDashboardScreen(
 
     if (uiState.isLoading) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = InnovatePrimary)
+            CircularProgressIndicator(color = currentRoleAccent().accent)
         }
         return
     }
@@ -246,13 +247,13 @@ private fun ManagerHeaderCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = InnovateShapes.Large,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Brush.horizontalGradient(listOf(InnovatePrimary, InnovatePrimaryDark)))
+                .background(currentRoleAccent().horizontalGradient())
                 .padding(20.dp)
         ) {
             Column {

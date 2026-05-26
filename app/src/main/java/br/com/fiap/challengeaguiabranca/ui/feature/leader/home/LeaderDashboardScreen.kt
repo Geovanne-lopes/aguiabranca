@@ -48,8 +48,8 @@ import br.com.fiap.challengeaguiabranca.ui.components.SimpleBarChart
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.KpiStatCard
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLeaderPurple
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimaryDark
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
 import br.com.fiap.challengeaguiabranca.ui.util.formatCurrency
@@ -69,7 +69,7 @@ fun LeaderDashboardScreen(
 
     if (uiState.isLoading) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = InnovateLeaderPurple)
+            CircularProgressIndicator(color = currentRoleAccent().accent)
         }
         return
     }
@@ -92,9 +92,7 @@ fun LeaderDashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            Brush.horizontalGradient(
-                                listOf(InnovateLeaderPurple, InnovatePrimaryDark)
-                            )
+                            currentRoleAccent().horizontalGradient()
                         )
                         .padding(22.dp)
                 ) {

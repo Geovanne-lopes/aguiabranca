@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -98,6 +98,7 @@ fun Modifier.premiumListEntrance(index: Int = 0): Modifier {
 
 @Composable
 fun Modifier.pressAura(interactionSource: MutableInteractionSource): Modifier {
+    val accent = currentRoleAccent().accent
     val pressed by interactionSource.collectIsPressedAsState()
     val auraAlpha by animateFloatAsState(
         targetValue = if (pressed) 0.36f else 0f,
@@ -127,7 +128,7 @@ fun Modifier.pressAura(interactionSource: MutableInteractionSource): Modifier {
         .shadow(elevation = elevation, shape = RoundedCornerShape(18.dp))
         .border(
             width = 1.dp,
-            color = Color(0xFFFF4FA3).copy(alpha = auraAlpha),
+            color = accent.copy(alpha = auraAlpha),
             shape = RoundedCornerShape(18.dp)
         )
         .graphicsLayer {

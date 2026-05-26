@@ -60,7 +60,9 @@ import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.OperatorIdeasS
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.OperatorIdeasViewModel
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.strategies.OperatorStrategiesScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.shared.collaborators.CollaboratorsChatScreen
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
+import br.com.fiap.challengeaguiabranca.domain.model.UserRole
+import br.com.fiap.challengeaguiabranca.ui.theme.RoleThemedScreen
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateBackgroundColor
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -97,6 +99,7 @@ fun OperatorHomeScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    RoleThemedScreen(role = UserRole.OPERATOR) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (showMainChrome) {
             ModalNavigationDrawer(
@@ -112,7 +115,7 @@ fun OperatorHomeScreen(
             ) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = InnovateBackground,
+                    containerColor = innovateBackgroundColor(),
                     topBar = {
                         OperatorTopBar(
                             title = topBarTitleForTab(selectedTab),
@@ -187,6 +190,7 @@ fun OperatorHomeScreen(
             OperatorOverlay.NONE -> Unit
         }
     }
+    }
 }
 
 @Composable
@@ -237,7 +241,7 @@ private fun OperatorTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = InnovateBackground,
+            containerColor = innovateBackgroundColor(),
             titleContentColor = InnovateTextPrimary
         )
     )

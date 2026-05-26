@@ -23,6 +23,8 @@ import org.koin.compose.koinInject
 @Composable
 fun InnovationApp(
     modifier: Modifier = Modifier,
+    darkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     isLoggedInUseCase: IsLoggedInUseCase = koinInject(),
     getCurrentUserUseCase: GetCurrentUserUseCase = koinInject()
 ) {
@@ -49,7 +51,8 @@ fun InnovationApp(
             InnovationNavGraph(
                 navController = navController,
                 startDestination = destination,
-                modifier = modifier
+                modifier = modifier,
+                onToggleTheme = onToggleTheme
             )
         }
     }

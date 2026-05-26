@@ -2,7 +2,12 @@ package br.com.fiap.challengeaguiabranca.ui.feature.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +44,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -54,18 +57,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.UserRole
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLink
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateCard
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLogoBackground
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLogoForeground
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateScreenBackground
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSuccess
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateBorderColor
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateLinkColor
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateSurface2Color
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateSurfaceColor
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateError
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimaryDark
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimaryLight
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     onNavigateToHome: (String) -> Unit,
+    onToggleTheme: () -> Unit = {},
     viewModel: LoginViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -94,10 +107,13 @@ fun LoginScreen(
         onRegisterSubmit = viewModel::registerLocalAccount,
         onResetEmailChange = viewModel::onResetEmailChange,
         onResetPasswordChange = viewModel::onResetPasswordChange,
-        onResetSubmit = viewModel::resetLocalPassword
+        onResetSubmit = viewModel::resetLocalPassword,
+        onApplyDemo = viewModel::applyDemoAccount,
+        onToggleTheme = onToggleTheme
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LoginContent(
     uiState: LoginUiState,
@@ -115,7 +131,9 @@ private fun LoginContent(
     onRegisterSubmit: () -> Unit,
     onResetEmailChange: (String) -> Unit,
     onResetPasswordChange: (String) -> Unit,
-    onResetSubmit: () -> Unit
+    onResetSubmit: () -> Unit,
+    onApplyDemo: (UserRole) -> Unit,
+    onToggleTheme: () -> Unit
 ) {
     when (uiState.mode) {
         LoginMode.ABOUT -> AboutInnovateScreen(onBack = onBackToLogin, onRegister = onOpenRegister)
@@ -139,112 +157,107 @@ private fun LoginContent(
     }
     if (uiState.mode != LoginMode.LOGIN) return
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(InnovateBackground)
-            .imePadding()
+    val accent = currentRoleAccent()
+
+    InnovateScreenBackground(
+        modifier = Modifier.imePadding()
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(InnovatePrimary, InnovatePrimaryDark)
-                        )
-                    )
-                    .padding(horizontal = 24.dp, vertical = 32.dp)
+        IconButton(
+            onClick = onToggleTheme,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp, end = 20.dp)
+                .size(36.dp)
+                .border(1.dp, innovateBorderColor(), InnovateShapes.Small)
+                .background(innovateSurfaceColor(), InnovateShapes.Small)
+        ) {
+            Text("◐", fontSize = 17.sp, color = InnovateTextPrimary)
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 26.dp)
             ) {
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(InnovatePrimaryLight.copy(alpha = 0.35f))
-                            .padding(10.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Bolt,
-                            contentDescription = null,
-                            tint = InnovateOnPrimary
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        color = InnovateOnPrimary,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.login_welcome),
-                        color = InnovateOnPrimary.copy(alpha = 0.9f),
-                        style = MaterialTheme.typography.bodyLarge
+                Box(
+                    modifier = Modifier
+                        .clip(InnovateShapes.Medium)
+                        .background(InnovateLogoBackground)
+                        .padding(10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Bolt,
+                        contentDescription = null,
+                        tint = InnovateLogoForeground
                     )
                 }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.app_name),
+                    color = InnovateTextPrimary,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.5).sp
+                )
+                Text(
+                    text = stringResource(R.string.login_tagline),
+                    color = InnovateTextSecondary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
-            Card(
+            InnovateCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .offset(y = (-36).dp),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .verticalScroll(rememberScrollState())
+                    modifier = Modifier.padding(22.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.login_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = stringResource(R.string.login_accounts_hint),
+                        text = stringResource(R.string.login_demo_hint),
                         style = MaterialTheme.typography.bodySmall,
-                        color = InnovateTextSecondary
+                        color = InnovateTextSecondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(innovateSurface2Color(), InnovateShapes.Small)
+                            .border(1.dp, InnovatePrimary.copy(alpha = 0.1f), InnovateShapes.Small)
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
                     )
-                    Text(
-                        text = stringResource(R.string.login_password_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = InnovateTextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        DemoChip("Operador") { onApplyDemo(UserRole.OPERATOR) }
+                        DemoChip("Gestor") { onApplyDemo(UserRole.MANAGER) }
+                        DemoChip("Líder") { onApplyDemo(UserRole.LEADER) }
+                    }
+
+                    LoginField(
+                        label = stringResource(R.string.login_email_label),
                         value = uiState.email,
                         onValueChange = onEmailChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.login_email_label)) },
-                        placeholder = { Text(stringResource(R.string.login_email_hint)) },
-                        leadingIcon = {
-                            Icon(Icons.Default.Email, contentDescription = null)
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        singleLine = true,
-                        colors = outlinedFieldColors()
+                        placeholder = stringResource(R.string.login_email_hint),
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                        keyboardType = KeyboardType.Email
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
+                    LoginField(
+                        label = stringResource(R.string.login_password_label),
                         value = uiState.password,
                         onValueChange = onPasswordChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.login_password_label)) },
-                        leadingIcon = {
-                            Icon(Icons.Default.Lock, contentDescription = null)
-                        },
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        singleLine = true,
-                        colors = outlinedFieldColors()
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        keyboardType = KeyboardType.Password,
+                        isPassword = true
                     )
 
                     TextButton(
@@ -253,16 +266,21 @@ private fun LoginContent(
                     ) {
                         Text(
                             text = stringResource(R.string.login_forgot_password),
-                            color = InnovateLink
+                            color = innovateLinkColor(),
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
 
                     uiState.errorMessage?.let { message ->
                         Text(
                             text = message,
-                            color = MaterialTheme.colorScheme.error,
+                            color = InnovateError,
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFFEF2F2), InnovateShapes.Small)
+                                .border(1.dp, InnovateError.copy(alpha = 0.18f), InnovateShapes.Small)
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
                         )
                     }
 
@@ -271,7 +289,11 @@ private fun LoginContent(
                             text = message,
                             color = Color(0xFF047857),
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFECFDF5), InnovateShapes.Small)
+                                .border(1.dp, InnovateSuccess.copy(alpha = 0.2f), InnovateShapes.Small)
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
                         )
                     }
 
@@ -281,8 +303,8 @@ private fun LoginContent(
                             .fillMaxWidth()
                             .height(52.dp),
                         enabled = !uiState.isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = InnovatePrimary)
+                        shape = InnovateShapes.Small,
+                        colors = ButtonDefaults.buttonColors(containerColor = accent.accent)
                     ) {
                         if (uiState.isLoading) {
                             CircularProgressIndicator(
@@ -297,7 +319,6 @@ private fun LoginContent(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(R.string.login_first_time),
                         modifier = Modifier.fillMaxWidth(),
@@ -311,21 +332,79 @@ private fun LoginContent(
                     ) {
                         Text(
                             text = stringResource(R.string.login_know_brand),
-                            color = InnovateLink,
+                            color = innovateLinkColor(),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
             }
-        }
 
+            Text(
+                text = stringResource(R.string.login_copyright),
+                color = InnovateTextSecondary,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DemoChip(label: String, onClick: () -> Unit) {
+    Text(
+        text = label,
+        modifier = Modifier
+            .clip(InnovateShapes.Pill)
+            .border(1.dp, innovateBorderColor(), InnovateShapes.Pill)
+            .background(innovateSurfaceColor(), InnovateShapes.Pill)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = InnovateTextPrimary
+    )
+}
+
+@Composable
+private fun LoginField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String = "",
+    leadingIcon: @Composable (() -> Unit)? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isPassword: Boolean = false
+) {
+    Column {
         Text(
-            text = stringResource(R.string.login_copyright),
-            color = InnovateTextSecondary,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = InnovateTextSecondary
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = if (placeholder.isNotEmpty()) {
+                { Text(placeholder) }
+            } else {
+                null
+            },
+            leadingIcon = leadingIcon,
+            visualTransformation = if (isPassword) {
+                PasswordVisualTransformation()
+            } else {
+                androidx.compose.ui.text.input.VisualTransformation.None
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            singleLine = true,
+            shape = InnovateShapes.Small,
+            colors = outlinedFieldColors()
         )
     }
 }
@@ -337,15 +416,17 @@ private fun AboutInnovateScreen(onBack: () -> Unit, onRegister: () -> Unit) {
         Triple("🧩 O que fazemos", "Conectamos operadores, gestores e liderança em um workspace de ideias, orientações, projetos, ranking, colaboradores e chat.", R.drawable.about_team_workshop),
         Triple("💬 Feedbacks", "Nada se perde no caminho. O operador acompanha a ideia, o gestor orienta e a liderança cria diretrizes para manter todos alinhados.", R.drawable.about_team_feedback)
     )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(InnovateBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        TextButton(onClick = onBack) { Text("← Voltar") }
+    InnovateScreenBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+        TextButton(onClick = onBack) {
+            Text("← Voltar", color = innovateLinkColor(), fontWeight = FontWeight.Bold)
+        }
         Text("⚡ InnovateCorp", color = InnovateTextSecondary, fontWeight = FontWeight.Bold)
         Text(
             "Um lugar para ideias saírem do corredor e virarem projeto.",
@@ -370,16 +451,13 @@ private fun AboutInnovateScreen(onBack: () -> Unit, onRegister: () -> Unit) {
             Text("Criar minha conta", fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(24.dp))
+        }
     }
 }
 
 @Composable
 private fun AboutTopicCard(title: String, text: String, imageRes: Int) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    InnovateCard {
         Column {
             Image(
                 painter = painterResource(imageRes),
@@ -459,19 +537,25 @@ private fun AuthSimpleScaffold(
     onBack: () -> Unit,
     content: @Composable Column.() -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(InnovateBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        TextButton(onClick = onBack) { Text("← Voltar") }
-        Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(20.dp)) {
-            Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                content()
+    InnovateScreenBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            TextButton(onClick = onBack) {
+                Text("← Voltar", color = innovateLinkColor(), fontWeight = FontWeight.Bold)
+            }
+            InnovateCard {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    content()
+                }
             }
         }
     }
@@ -479,6 +563,7 @@ private fun AuthSimpleScaffold(
 
 @Composable
 private fun outlinedFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = InnovatePrimary,
-    focusedLabelColor = InnovatePrimary
+    focusedBorderColor = currentRoleAccent().accent,
+    focusedLabelColor = currentRoleAccent().accent,
+    unfocusedBorderColor = innovateBorderColor()
 )

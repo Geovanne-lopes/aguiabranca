@@ -42,8 +42,10 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimaryDark
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
+import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateBorderColor
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateSurfaceColor
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSuccess
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -59,17 +61,13 @@ fun OperatorWelcomeBanner(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = InnovateShapes.Large,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(InnovatePrimary, InnovatePrimaryDark)
-                    )
-                )
+                .background(currentRoleAccent().horizontalGradient())
                 .padding(20.dp)
         ) {
             Row(
@@ -130,9 +128,9 @@ fun QuickActionCard(
                 indication = null,
                 onClick = onClick
             ),
-        shape = RoundedCornerShape(16.dp),
+        shape = InnovateShapes.Medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor())
     ) {
         Column(
             modifier = Modifier
@@ -143,7 +141,7 @@ fun QuickActionCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = InnovatePrimary,
+                tint = currentRoleAccent().accent,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -167,9 +165,9 @@ fun KpiStatCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = InnovateShapes.Medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor())
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -193,7 +191,7 @@ fun KpiStatCard(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(InnovatePrimary.copy(alpha = 0.12f)),
+                        .background(currentRoleAccent().accentSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(icon, contentDescription = null, tint = InnovatePrimary)
@@ -224,8 +222,8 @@ fun InsightDayCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = InnovateShapes.Medium,
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -246,7 +244,7 @@ fun InsightDayCard(
             when {
                 isLoading -> CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = InnovatePrimary
+                    color = currentRoleAccent().accent
                 )
                 error != null -> {
                     Text(text = error, color = MaterialTheme.colorScheme.error)
@@ -271,8 +269,8 @@ fun GuidelineDetailCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = InnovateShapes.Medium,
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -299,8 +297,8 @@ fun GuidelineReadOnlyCard(
     if (guideline == null) return
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = InnovateShapes.Medium,
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -335,7 +333,7 @@ fun RecentIdeaItem(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = innovateSurfaceColor()),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -345,7 +343,7 @@ fun RecentIdeaItem(
             Icon(
                 Icons.Default.Lightbulb,
                 contentDescription = null,
-                tint = InnovatePrimary,
+                tint = currentRoleAccent().accent,
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.size(12.dp))

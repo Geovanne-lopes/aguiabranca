@@ -47,7 +47,9 @@ import br.com.fiap.challengeaguiabranca.ui.feature.manager.suggestion.ManagerSug
 import br.com.fiap.challengeaguiabranca.ui.feature.manager.team.ManagerTeamScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.shared.collaborators.CollaboratorsChatScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.shared.RoleHomeViewModel
-import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
+import br.com.fiap.challengeaguiabranca.domain.model.UserRole
+import br.com.fiap.challengeaguiabranca.ui.theme.RoleThemedScreen
+import br.com.fiap.challengeaguiabranca.ui.theme.innovateBackgroundColor
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.util.premiumTabTransform
 import kotlinx.coroutines.launch
@@ -65,6 +67,7 @@ fun ManagerMainScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    RoleThemedScreen(role = UserRole.MANAGER) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (overlay == ManagerOverlay.NONE) {
             ModalNavigationDrawer(
@@ -78,7 +81,7 @@ fun ManagerMainScreen(
             ) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = InnovateBackground,
+                    containerColor = innovateBackgroundColor(),
                     topBar = {
                         ManagerTopBar(
                             title = topBarTitle(selectedTab),
@@ -144,6 +147,7 @@ fun ManagerMainScreen(
             ManagerOverlay.NONE -> Unit
         }
     }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -182,7 +186,7 @@ private fun ManagerTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = InnovateBackground,
+            containerColor = innovateBackgroundColor(),
             titleContentColor = InnovateTextPrimary
         )
     )
