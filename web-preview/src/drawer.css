@@ -1,0 +1,241 @@
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.5);
+  backdrop-filter: blur(1.5px);
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(310px, 92%);
+  background: var(--innovate-surface);
+  z-index: 40;
+  box-shadow: -12px 0 36px rgba(0, 0, 0, 0.16);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+:root[data-theme='dark'] .drawer-backdrop {
+  background: rgba(0, 0, 0, 0.66);
+  backdrop-filter: blur(2px);
+}
+
+:root[data-theme='dark'] .drawer-panel {
+  background: var(--innovate-background);
+  border-left: 1px solid var(--innovate-border);
+  box-shadow: -14px 0 38px rgba(0, 0, 0, 0.44);
+}
+
+.drawer-panel.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--innovate-border);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+:root[data-theme='dark'] .drawer-header {
+  background: color-mix(in srgb, var(--accent) 16%, var(--innovate-surface));
+  color: var(--innovate-text-primary);
+  border-bottom-color: var(--innovate-border);
+}
+
+:root[data-theme='dark'] .drawer-header .icon-btn {
+  color: var(--accent);
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.drawer-header .material-symbols-rounded {
+  color: var(--accent);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 24px;
+  scrollbar-width: thin;
+}
+
+:root[data-theme='dark'] .drawer-body {
+  background: var(--innovate-background);
+}
+
+:root[data-theme='dark'] .drawer-body .empty-state {
+  color: var(--innovate-text-secondary);
+}
+
+.drawer-body .empty-state {
+  text-align: center;
+  padding: 30px 8px;
+}
+
+/* ---------------------------------------------------------- */
+/* Profile avatar (used in operator/manager/leader profile)    */
+/* ---------------------------------------------------------- */
+.profile-avatar-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 12px;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.25);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-camera {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+
+:root[data-theme='dark'] .profile-avatar-camera {
+  background: var(--innovate-surface);
+  color: var(--accent);
+  border: 1px solid var(--innovate-border);
+}
+
+.profile-avatar-camera:hover {
+  background: var(--accent-soft);
+}
+
+.avatar-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 14px 0 12px;
+}
+
+.avatar-color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.avatar-color-dot:hover {
+  transform: scale(1.1);
+}
+
+.avatar-color-dot.selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.profile-edit-fields input {
+  width: 100%;
+  padding: 11px 13px;
+  margin-bottom: 10px;
+  border: 1px solid var(--innovate-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  background: var(--innovate-surface);
+  color: var(--innovate-text-primary);
+}
+
+:root[data-theme='dark'] .profile-edit-fields input {
+  background: #f6f1e8;
+  color: #171511;
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+:root[data-theme='dark'] .profile-edit-fields input::placeholder {
+  color: #81796e;
+}
+
+.profile-edit-fields input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.profile-edit-fields label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+:root[data-theme='dark'] .profile-edit-fields label {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.profile-header {
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.profile-header strong {
+  display: block;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.profile-header .role-pill {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

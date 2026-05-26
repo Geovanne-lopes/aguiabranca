@@ -48,6 +48,10 @@
     <string name="operator_recent_ideas">Suas ideias recentes</string>
     <string name="operator_view_all">Ver todas</string>
     <string name="operator_no_ideas">Nenhuma ideia enviada ainda.</string>
+    <string name="operator_notifications_title">Notificações</string>
+    <string name="operator_notifications_empty">Nenhuma notificação no momento.</string>
+    <string name="operator_all_ideas_title">Todas as suas ideias</string>
+    <string name="operator_report_form_title">Reportar problema</string>
 
     <!-- Operador — Ideias -->
     <string name="operator_ideas_list_title">Minhas ideias</string>
@@ -67,6 +71,12 @@
     <string name="operator_strategies_subtitle">Orientações definidas pela liderança para alinhar suas ideias.</string>
     <string name="operator_strategies_empty">Nenhuma diretriz cadastrada ainda.</string>
     <string name="profile_stats_title">Resumo da conta</string>
+    <string name="profile_edit">Editar perfil</string>
+    <string name="profile_save">Salvar alterações</string>
+    <string name="profile_cancel">Cancelar</string>
+    <string name="profile_field_name">Nome completo</string>
+    <string name="profile_field_email">E-mail</string>
+    <string name="profile_photo_hint">Toque na foto para escolher da galeria ou use uma cor abaixo</string>
     <string name="gamification_level_title">Nível %1$d</string>
     <string name="gamification_points">%1$d pontos</string>
     <string name="gamification_next_level">Envie mais %1$d ideia(s) para subir de nível</string>
@@ -104,6 +114,23 @@
     <string name="manager_profile_pending">Ideias pendentes</string>
     <string name="manager_profile_active_projects">Projetos ativos</string>
     <string name="manager_profile_total_ideas">Total de ideias</string>
+    <string name="manager_notifications_title">Notificações</string>
+    <string name="manager_notifications_empty">Nenhuma notificação no momento.</string>
+    <string name="manager_quick_actions">Ações rápidas</string>
+    <string name="manager_action_create_idea">Criar ideia</string>
+    <string name="manager_action_suggestion">Enviar sugestão</string>
+    <string name="manager_suggestion_title">Sugestão ao operador</string>
+    <string name="manager_suggestion_subtitle">Envie orientações e feedback para os operadores da equipe.</string>
+    <string name="manager_suggestion_target">Operador</string>
+    <string name="manager_suggestion_message">Mensagem</string>
+    <string name="manager_suggestion_send">Enviar sugestão</string>
+    <string name="manager_create_idea_title">Registrar ideia</string>
+    <string name="manager_team_title">Operadores da equipe</string>
+    <string name="manager_team_subtitle">Ranking por volume de ideias enviadas (dados de demonstração).</string>
+    <string name="manager_team_empty">Nenhum operador com ideias ainda.</string>
+    <string name="manager_team_stats">%1$d enviadas · %2$d aprovadas</string>
+    <string name="manager_top_operators">Operadores mais ativos</string>
+    <string name="manager_idea_author">Por: %1$s</string>
     <string name="manager_projects_title">Projetos de inovação</string>
     <string name="manager_projects_empty">Nenhum projeto ainda. Aprove ideias e crie projetos pelo +.</string>
     <string name="manager_project_create_title">Novo projeto</string>
@@ -153,4 +180,19 @@
     <string name="leader_guideline_save">Salvar</string>
     <string name="leader_guideline_edit">Editar</string>
     <string name="leader_guideline_delete">Excluir</string>
+
+    <!-- Líder — Equipe, Perfil, Quick actions -->
+    <string name="leader_nav_team">Equipe</string>
+    <string name="leader_quick_actions">Ações rápidas</string>
+    <string name="leader_quick_new_guideline_hint">Nova diretriz</string>
+    <string name="leader_quick_send_suggestion">Enviar sugestão</string>
+    <string name="leader_top_operators">Mais ativos do mês</string>
+    <string name="leader_view_all">Ver todos</string>
+    <string name="leader_team_monthly_title">Destaques do mês</string>
+    <string name="leader_team_monthly_subtitle">Ranking dos operadores mais ativos no mês corrente.</string>
+    <string name="leader_team_overall_title">Ranking acumulado</string>
+    <string name="leader_team_empty_month">Sem registros de ideias neste mês.</string>
+    <string name="leader_team_stats">%1$d ideias · %2$d aprovadas</string>
+    <string name="leader_profile_total_ideas">Ideias no portfólio</string>
+    <string name="leader_profile_total_guidelines">Diretrizes publicadas</string>
 </resources>

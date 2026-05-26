@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -48,6 +48,7 @@ import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
+import br.com.fiap.challengeaguiabranca.ui.util.premiumListEntrance
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -128,11 +129,12 @@ private fun GuidelinesList(
                 Text(stringResource(R.string.leader_guidelines_empty), color = InnovateTextSecondary)
             }
         } else {
-            items(guidelines, key = { it.id }) { guideline ->
+            itemsIndexed(guidelines, key = { _, guideline -> guideline.id }) { index, guideline ->
                 GuidelineManageCard(
                     guideline = guideline,
                     onEdit = { onEdit(guideline) },
-                    onDelete = { onDelete(guideline.id) }
+                    onDelete = { onDelete(guideline.id) },
+                    modifier = Modifier.premiumListEntrance(index)
                 )
             }
         }
@@ -144,10 +146,11 @@ private fun GuidelinesList(
 private fun GuidelineManageCard(
     guideline: StrategicGuideline,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

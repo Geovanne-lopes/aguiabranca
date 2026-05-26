@@ -17,6 +17,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.home.OperatorTab
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
+import br.com.fiap.challengeaguiabranca.ui.util.NavAuraIcon
 
 @Composable
 fun OperatorBottomBar(
@@ -27,28 +28,44 @@ fun OperatorBottomBar(
         NavigationBarItem(
             selected = selectedTab == OperatorTab.HOME,
             onClick = { onTabSelected(OperatorTab.HOME) },
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            icon = {
+                NavAuraIcon(selectedTab == OperatorTab.HOME, InnovatePrimary) {
+                    Icon(Icons.Default.Home, contentDescription = null)
+                }
+            },
             label = { Text(stringResource(R.string.operator_nav_home)) },
             colors = navItemColors()
         )
         NavigationBarItem(
             selected = selectedTab == OperatorTab.STRATEGIES,
             onClick = { onTabSelected(OperatorTab.STRATEGIES) },
-            icon = { Icon(Icons.Outlined.TrackChanges, contentDescription = null) },
+            icon = {
+                NavAuraIcon(selectedTab == OperatorTab.STRATEGIES, InnovatePrimary) {
+                    Icon(Icons.Outlined.TrackChanges, contentDescription = null)
+                }
+            },
             label = { Text(stringResource(R.string.operator_nav_strategies)) },
             colors = navItemColors()
         )
         NavigationBarItem(
             selected = selectedTab == OperatorTab.IDEAS,
             onClick = { onTabSelected(OperatorTab.IDEAS) },
-            icon = { Icon(Icons.Default.Lightbulb, contentDescription = null) },
+            icon = {
+                NavAuraIcon(selectedTab == OperatorTab.IDEAS, InnovatePrimary) {
+                    Icon(Icons.Default.Lightbulb, contentDescription = null)
+                }
+            },
             label = { Text(stringResource(R.string.operator_nav_ideas)) },
             colors = navItemColors()
         )
         NavigationBarItem(
             selected = selectedTab == OperatorTab.PROFILE,
             onClick = { onTabSelected(OperatorTab.PROFILE) },
-            icon = { Icon(Icons.Default.Person, contentDescription = null) },
+            icon = {
+                NavAuraIcon(selectedTab == OperatorTab.PROFILE, InnovatePrimary) {
+                    Icon(Icons.Default.Person, contentDescription = null)
+                }
+            },
             label = { Text(stringResource(R.string.operator_nav_profile)) },
             colors = navItemColors()
         )

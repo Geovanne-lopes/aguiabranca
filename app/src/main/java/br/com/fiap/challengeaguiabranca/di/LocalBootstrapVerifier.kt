@@ -32,6 +32,7 @@ object LocalBootstrapVerifier {
         scope.launch {
             runCatching {
                 databaseSeeder.seedIfEmpty()
+                databaseSeeder.seedMockIdeasIfEmpty()
                 val ideas = ideaRepository.observeAll().first()
                 val projects = projectRepository.observeAll().first()
                 val guidelines = guidelineRepository.observeAll().first()

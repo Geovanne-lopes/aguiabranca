@@ -326,6 +326,27 @@ Respostas esperadas ao violar perfil: **`403 Forbidden`** (corpo com código, ex
 2. Sync Gradle.
 3. Executar em emulador/dispositivo API 28+.
 
+### Preview no navegador (somente visualização)
+
+O app Android em `app/` **não é alterado**. A pasta `web-preview/` espelha login, cores e telas principais para você navegar no browser.
+
+**Requisito:** [Node.js](https://nodejs.org/) instalado.
+
+```powershell
+# Na raiz do projeto
+.\preview.ps1
+```
+
+Ou manualmente:
+
+```bash
+cd web-preview
+npm install
+npm run dev
+```
+
+Abre em **http://localhost:5173**. Use as mesmas contas demo do login Android (`operador@…`, `gestor@…`, `lideranca@…`).
+
 ---
 
 ## Notas acadêmicas

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,6 +21,7 @@ import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.Guideline
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.home.OperatorHomeViewModel
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
+import br.com.fiap.challengeaguiabranca.ui.util.premiumListEntrance
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -68,8 +69,11 @@ fun OperatorStrategiesScreen(
                 )
             }
         } else {
-            items(uiState.allGuidelines, key = { it.id }) { guideline ->
-                GuidelineDetailCard(guideline = guideline)
+            itemsIndexed(uiState.allGuidelines, key = { _, guideline -> guideline.id }) { index, guideline ->
+                GuidelineDetailCard(
+                    guideline = guideline,
+                    modifier = Modifier.premiumListEntrance(index)
+                )
             }
         }
         item { Spacer(modifier = Modifier.height(16.dp)) }

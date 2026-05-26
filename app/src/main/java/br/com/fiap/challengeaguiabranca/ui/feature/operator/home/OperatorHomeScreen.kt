@@ -1,5 +1,6 @@
 package br.com.fiap.challengeaguiabranca.ui.feature.operator.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,22 +17,28 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,23 +47,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
+import br.com.fiap.challengeaguiabranca.domain.model.IdeaCategory
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.GuidelineReadOnlyCard
+import br.com.fiap.challengeaguiabranca.ui.feature.operator.profile.OperatorProfileScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.InsightDayCard
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.KpiStatCard
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.OperatorBottomBar
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.OperatorWelcomeBanner
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.QuickActionCard
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.RecentIdeaItem
-import br.com.fiap.challengeaguiabranca.domain.model.IdeaCategory
-import br.com.fiap.challengeaguiabranca.ui.components.ProfileStatRow
-import br.com.fiap.challengeaguiabranca.ui.components.RoleProfileContent
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.OperatorIdeasScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.OperatorIdeasViewModel
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.strategies.OperatorStrategiesScreen
+import br.com.fiap.challengeaguiabranca.ui.feature.shared.collaborators.CollaboratorsChatScreen
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
+import br.com.fiap.challengeaguiabranca.ui.util.premiumTabTransform
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -67,61 +76,115 @@ fun OperatorHomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val selectedTab by homeViewModel.selectedTab.collectAsStateWithLifecycle()
+    val overlay by homeViewModel.overlay.collectAsStateWithLifecycle()
+    val submitOverlay by homeViewModel.submitOverlay.collectAsStateWithLifecycle()
+    val ideasUiState by ideasViewModel.uiState.collectAsStateWithLifecycle()
 
-    val openIdeasTab: (IdeaCategory) -> Unit = { category ->
-        homeViewModel.selectTab(OperatorTab.IDEAS)
-        ideasViewModel.openForm(defaultCategory = category)
+    LaunchedEffect(overlay, submitOverlay.category) {
+        if (overlay == OperatorOverlay.SUBMIT_IDEA) {
+            ideasViewModel.openForm(defaultCategory = submitOverlay.category)
+        }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = InnovateBackground,
-        topBar = {
-            OperatorTopBar(
-                title = topBarTitleForTab(selectedTab),
-                showNotificationBadge = selectedTab == OperatorTab.HOME
-            )
-        },
-        bottomBar = {
-            OperatorBottomBar(
-                selectedTab = selectedTab,
-                onTabSelected = homeViewModel::selectTab
-            )
+    LaunchedEffect(ideasUiState.successMessage) {
+        if (ideasUiState.successMessage != null && overlay == OperatorOverlay.SUBMIT_IDEA) {
+            homeViewModel.closeOverlay()
+            ideasViewModel.clearSuccessMessage()
         }
-    ) { padding ->
-        when (selectedTab) {
-            OperatorTab.HOME -> OperatorHomeContent(
-                uiState = uiState,
-                modifier = Modifier.padding(padding),
-                onNewIdeaClick = { openIdeasTab(IdeaCategory.PROCESS) },
-                onReportProblemClick = { openIdeasTab(IdeaCategory.OTHER) },
-                onViewAllIdeasClick = { homeViewModel.selectTab(OperatorTab.IDEAS) },
-                onRetryInsight = homeViewModel::loadInsight
-            )
-            OperatorTab.IDEAS -> OperatorIdeasScreen(
-                modifier = Modifier.padding(padding)
-            )
-            OperatorTab.PROFILE -> RoleProfileContent(
-                modifier = Modifier.padding(padding),
-                userName = uiState.userFullName,
-                userEmail = uiState.userEmail,
-                roleLabel = stringResource(R.string.profile_operator_title),
-                gamification = uiState.gamification,
-                stats = listOf(
-                    ProfileStatRow(
-                        stringResource(R.string.operator_kpi_submitted),
-                        uiState.ideasSubmittedCount.toString()
-                    ),
-                    ProfileStatRow(
-                        stringResource(R.string.operator_kpi_approved),
-                        uiState.ideasApprovedCount.toString()
+    }
+
+    val showMainChrome = overlay == OperatorOverlay.NONE
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (showMainChrome) {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    OperatorNotificationsDrawerSheet(
+                        notifications = uiState.notifications,
+                        onClose = {
+                            scope.launch { drawerState.close() }
+                        }
                     )
-                ),
-                onLogout = { homeViewModel.logout(onLogout) }
+                }
+            ) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = InnovateBackground,
+                    topBar = {
+                        OperatorTopBar(
+                            title = topBarTitleForTab(selectedTab),
+                            showNotificationBadge = uiState.hasUnreadNotifications,
+                            onNotificationsClick = {
+                                homeViewModel.markNotificationsAsRead()
+                                scope.launch { drawerState.open() }
+                            }
+                        )
+                    },
+                    bottomBar = {
+                        OperatorBottomBar(
+                            selectedTab = selectedTab,
+                            onTabSelected = homeViewModel::selectTab
+                        )
+                    }
+                ) { padding ->
+                    AnimatedContent(
+                        targetState = selectedTab,
+                        transitionSpec = premiumTabTransform(),
+                        label = "operator-tabs"
+                    ) { tab ->
+                        when (tab) {
+                            OperatorTab.HOME -> OperatorHomeContent(
+                                uiState = uiState,
+                                modifier = Modifier.padding(padding),
+                                onNewIdeaClick = { homeViewModel.openSubmitIdea(IdeaCategory.PROCESS) },
+                                onReportProblemClick = { homeViewModel.openSubmitIdea(IdeaCategory.OTHER) },
+                            onCollaboratorsClick = homeViewModel::openCollaborators,
+                                onViewAllIdeasClick = homeViewModel::openAllIdeas,
+                                onRetryInsight = homeViewModel::loadInsight
+                            )
+                            OperatorTab.IDEAS -> OperatorIdeasScreen(
+                                modifier = Modifier.padding(padding)
+                            )
+                            OperatorTab.PROFILE -> OperatorProfileScreen(
+                                modifier = Modifier.padding(padding),
+                                onLogout = { homeViewModel.logout(onLogout) }
+                            )
+                            OperatorTab.STRATEGIES -> OperatorStrategiesScreen(
+                                modifier = Modifier.padding(padding)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        when (overlay) {
+            OperatorOverlay.ALL_IDEAS -> OperatorAllIdeasScreen(
+                ideas = uiState.allIdeas,
+                onBack = homeViewModel::closeOverlay
             )
-            OperatorTab.STRATEGIES -> OperatorStrategiesScreen(
-                modifier = Modifier.padding(padding)
+            OperatorOverlay.SUBMIT_IDEA -> OperatorSubmitIdeaScreen(
+                category = submitOverlay.category,
+                form = ideasUiState.form,
+                isSubmitting = ideasUiState.isSubmitting,
+                errorMessage = ideasUiState.errorMessage,
+                onTitleChange = ideasViewModel::onTitleChange,
+                onDescriptionChange = ideasViewModel::onDescriptionChange,
+                onCategoryChange = ideasViewModel::onCategoryChange,
+                onSubmit = ideasViewModel::submitIdea,
+                onBack = {
+                    ideasViewModel.closeForm()
+                    homeViewModel.closeOverlay()
+                }
             )
+            OperatorOverlay.COLLABORATORS -> CollaboratorsChatScreen(
+                currentRole = "Operador",
+                onBack = homeViewModel::closeOverlay
+            )
+            OperatorOverlay.NONE -> Unit
         }
     }
 }
@@ -141,7 +204,8 @@ private fun topBarTitleForTab(tab: OperatorTab): String {
 @Composable
 private fun OperatorTopBar(
     title: String,
-    showNotificationBadge: Boolean
+    showNotificationBadge: Boolean,
+    onNotificationsClick: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -157,7 +221,7 @@ private fun OperatorTopBar(
         },
         actions = {
             Box {
-                IconButton(onClick = { }) {
+                IconButton(onClick = onNotificationsClick) {
                     Icon(Icons.Default.Notifications, contentDescription = null)
                 }
                 if (showNotificationBadge) {
@@ -184,6 +248,7 @@ private fun OperatorHomeContent(
     uiState: OperatorHomeUiState,
     onNewIdeaClick: () -> Unit,
     onReportProblemClick: () -> Unit,
+    onCollaboratorsClick: () -> Unit,
     onViewAllIdeasClick: () -> Unit,
     onRetryInsight: () -> Unit,
     modifier: Modifier = Modifier
@@ -238,6 +303,26 @@ private fun OperatorHomeContent(
                     title = stringResource(R.string.operator_action_report),
                     icon = Icons.Default.ReportProblem,
                     onClick = onReportProblemClick,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                QuickActionCard(
+                    title = "Colaboradores",
+                    icon = Icons.Default.Groups,
+                    onClick = onCollaboratorsClick,
+                    modifier = Modifier.weight(1f)
+                )
+                QuickActionCard(
+                    title = stringResource(R.string.operator_view_all),
+                    icon = Icons.Default.Lightbulb,
+                    onClick = onViewAllIdeasClick,
                     modifier = Modifier.weight(1f)
                 )
             }

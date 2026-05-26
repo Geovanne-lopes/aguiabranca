@@ -23,6 +23,12 @@ import br.com.fiap.challengeaguiabranca.domain.usecase.session.GetCurrentUserUse
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.IsLoggedInUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.ObserveCurrentUserUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.SaveUserSessionUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.manager.GetMonthlyOperatorRankingUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.manager.GetOperatorActivityRankingUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.manager.ObserveManagerSuggestionsUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.manager.ObserveSuggestionsForUserUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.manager.SendManagerSuggestionUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.session.UpdateUserProfileUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -38,6 +44,7 @@ val useCaseModule = module {
     factory { ObserveCurrentUserUseCase(get()) }
     factory { ClearSessionUseCase(get()) }
     factory { IsLoggedInUseCase(get()) }
+    factory { UpdateUserProfileUseCase(get()) }
 
     // Ideas
     factory { SubmitIdeaUseCase(get()) }
@@ -61,4 +68,11 @@ val useCaseModule = module {
 
     // Dashboard
     factory { GetRoiDashboardSummaryUseCase(get()) }
+
+    // Manager
+    factory { GetOperatorActivityRankingUseCase(get()) }
+    factory { GetMonthlyOperatorRankingUseCase(get()) }
+    factory { SendManagerSuggestionUseCase(get()) }
+    factory { ObserveManagerSuggestionsUseCase(get()) }
+    factory { ObserveSuggestionsForUserUseCase(get()) }
 }

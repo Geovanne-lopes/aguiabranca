@@ -17,6 +17,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.ui.feature.manager.ManagerTab
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
+import br.com.fiap.challengeaguiabranca.ui.util.NavAuraIcon
 
 @Composable
 fun ManagerBottomBar(
@@ -27,35 +28,55 @@ fun ManagerBottomBar(
         NavigationBarItem(
             selected = selectedTab == ManagerTab.HOME,
             onClick = { onTabSelected(ManagerTab.HOME) },
-            icon = { Icon(Icons.Default.Home, null) },
+            icon = {
+                NavAuraIcon(selectedTab == ManagerTab.HOME, InnovatePrimary) {
+                    Icon(Icons.Default.Home, null)
+                }
+            },
             label = { Text(stringResource(R.string.manager_nav_home)) },
             colors = navColors()
         )
         NavigationBarItem(
             selected = selectedTab == ManagerTab.CURATION,
             onClick = { onTabSelected(ManagerTab.CURATION) },
-            icon = { Icon(Icons.Default.Lightbulb, null) },
+            icon = {
+                NavAuraIcon(selectedTab == ManagerTab.CURATION, InnovatePrimary) {
+                    Icon(Icons.Default.Lightbulb, null)
+                }
+            },
             label = { Text(stringResource(R.string.manager_nav_curation)) },
             colors = navColors()
         )
         NavigationBarItem(
             selected = selectedTab == ManagerTab.PROJECTS,
             onClick = { onTabSelected(ManagerTab.PROJECTS) },
-            icon = { Icon(Icons.Default.Work, null) },
+            icon = {
+                NavAuraIcon(selectedTab == ManagerTab.PROJECTS, InnovatePrimary) {
+                    Icon(Icons.Default.Work, null)
+                }
+            },
             label = { Text(stringResource(R.string.manager_nav_projects)) },
             colors = navColors()
         )
         NavigationBarItem(
             selected = selectedTab == ManagerTab.GUIDELINES,
             onClick = { onTabSelected(ManagerTab.GUIDELINES) },
-            icon = { Icon(Icons.Outlined.MenuBook, null) },
+            icon = {
+                NavAuraIcon(selectedTab == ManagerTab.GUIDELINES, InnovatePrimary) {
+                    Icon(Icons.Outlined.MenuBook, null)
+                }
+            },
             label = { Text(stringResource(R.string.manager_nav_guidelines)) },
             colors = navColors()
         )
         NavigationBarItem(
             selected = selectedTab == ManagerTab.PROFILE,
             onClick = { onTabSelected(ManagerTab.PROFILE) },
-            icon = { Icon(Icons.Default.Person, null) },
+            icon = {
+                NavAuraIcon(selectedTab == ManagerTab.PROFILE, InnovatePrimary) {
+                    Icon(Icons.Default.Person, null)
+                }
+            },
             label = { Text(stringResource(R.string.operator_nav_profile)) },
             colors = navColors()
         )

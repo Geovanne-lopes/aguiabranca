@@ -2,6 +2,7 @@ package br.com.fiap.challengeaguiabranca.ui.feature.operator.home
 
 import br.com.fiap.challengeaguiabranca.domain.model.DailyInsight
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
+import br.com.fiap.challengeaguiabranca.domain.model.OperatorNotification
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.util.GamificationState
 
@@ -21,7 +22,10 @@ data class OperatorHomeUiState(
     val insightError: String? = null,
     val allGuidelines: List<StrategicGuideline> = emptyList(),
     val featuredGuideline: StrategicGuideline? = null,
+    val allIdeas: List<Idea> = emptyList(),
     val recentIdeas: List<Idea> = emptyList(),
+    val notifications: List<OperatorNotification> = emptyList(),
+    val hasUnreadNotifications: Boolean = false,
     val isLoading: Boolean = true
 )
 

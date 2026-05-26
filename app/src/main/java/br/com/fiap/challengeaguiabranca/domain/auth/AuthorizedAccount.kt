@@ -14,7 +14,7 @@ data class AuthorizedAccount(
 
 object AuthCatalog {
 
-    private val accounts = listOf(
+    private val baseAccounts = listOf(
         AuthorizedAccount(
             email = "operador@innovatecorp.com",
             password = "oper123",
@@ -32,6 +32,35 @@ object AuthCatalog {
         )
     )
 
+    private val registeredAccounts = mutableListOf<AuthorizedAccount>()
+
+    private val accounts: List<AuthorizedAccount>
+        get() = baseAccounts + registeredAccounts
+
     fun findByEmail(email: String): AuthorizedAccount? =
         accounts.find { it.email.equals(email.trim(), ignoreCase = true) }
+
+    fun register(email: String, password: String, role: UserRole): Boolean {
+        if (findByEmail(email) != null) return false
+        registeredAccounts.add(
+            AuthorizedAccount(
+                email = email.trim().lowercase(),
+                password = password,
+                role = role
+            )
+        )
+        return true
+    }
+
+    fun resetPassword(email: String, password: String): Boolean {
+        val cleanEmail = email.trim().lowercase()
+        val registeredIndex = registeredAccounts.indexOfFirst { it.email.equals(cleanEmail, ignoreCase = true) }
+        if (registeredIndex >= 0) {
+            registeredAccounts[registeredIndex] = registeredAccounts[registeredIndex].copy(password = password)
+            return true
+        }
+        val base = baseAccounts.find { it.email.equals(cleanEmail, ignoreCase = true) } ?: return false
+        registeredAccounts.add(base.copy(password = password))
+        return true
+    }
 }

@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Work
+import br.com.fiap.challengeaguiabranca.domain.model.OperatorActivity
+import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.QuickActionCard
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,6 +51,11 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ManagerDashboardScreen(
     onOpenCuration: () -> Unit,
+    onCreateIdea: () -> Unit,
+    onSendSuggestion: () -> Unit,
+    onOpenCollaborators: () -> Unit,
+    onViewTeam: () -> Unit,
+    topOperators: List<OperatorActivity>,
     modifier: Modifier = Modifier,
     viewModel: ManagerDashboardViewModel = koinViewModel()
 ) {
@@ -76,6 +86,54 @@ fun ManagerDashboardScreen(
         }
 
         item {
+            Text(
+                text = stringResource(R.string.manager_quick_actions),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                QuickActionCard(
+                    title = stringResource(R.string.manager_action_create_idea),
+                    icon = Icons.Default.Lightbulb,
+                    onClick = onCreateIdea,
+                    modifier = Modifier.weight(1f)
+                )
+                QuickActionCard(
+                    title = stringResource(R.string.manager_action_suggestion),
+                    icon = Icons.Default.Send,
+                    onClick = onSendSuggestion,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                QuickActionCard(
+                    title = "Colaboradores",
+                    icon = Icons.Default.Groups,
+                    onClick = onOpenCollaborators,
+                    modifier = Modifier.weight(1f)
+                )
+                QuickActionCard(
+                    title = stringResource(R.string.operator_view_all),
+                    icon = Icons.Default.BarChart,
+                    onClick = onViewTeam,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -94,6 +152,54 @@ fun ManagerDashboardScreen(
                     icon = Icons.Default.CheckCircle,
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.manager_top_operators),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.operator_view_all),
+                    color = InnovatePrimary,
+                    modifier = Modifier.clickable(onClick = onViewTeam),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+
+        if (topOperators.isEmpty()) {
+            item {
+                Text(stringResource(R.string.manager_team_empty), color = InnovateTextSecondary)
+            }
+        } else {
+            items(topOperators, key = { it.authorId }) { op ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Groups, null, tint = InnovatePrimary)
+                        Column(modifier = Modifier.padding(start = 12.dp)) {
+                            Text(op.name, fontWeight = FontWeight.Bold)
+                            Text(
+                                stringResource(R.string.manager_team_stats, op.ideasSubmitted, op.ideasApproved),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = InnovateTextSecondary
+                            )
+                        }
+                    }
+                }
             }
         }
 

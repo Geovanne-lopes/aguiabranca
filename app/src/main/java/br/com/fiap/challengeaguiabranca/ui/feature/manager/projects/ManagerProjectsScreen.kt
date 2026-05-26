@@ -1,14 +1,17 @@
 package br.com.fiap.challengeaguiabranca.ui.feature.manager.projects
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -175,6 +178,7 @@ private fun ProjectCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val statusColor = Color(project.status.colorHex)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,37 +188,58 @@ private fun ProjectCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onEdit
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(project.title, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.manager_project_delete))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(statusColor)
+            )
+            Column(modifier = Modifier.padding(16.dp).weight(1f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(project.title, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.manager_project_delete))
+                    }
                 }
+                Text(project.description, style = MaterialTheme.typography.bodySmall, color = InnovateTextSecondary)
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .background(statusColor, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        project.status.label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "ROI ${"%.0f".format(project.roiPercent)}%",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Text(
+                    stringResource(
+                        R.string.manager_project_financials,
+                        formatCurrency(project.investmentAmount),
+                        formatCurrency(project.obtainedProfit)
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = InnovateTextSecondary
+                )
+                Text(
+                    stringResource(R.string.manager_project_deadline, formatDate(project.deadlineEpochMillis)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = InnovateTextSecondary
+                )
             }
-            Text(project.description, style = MaterialTheme.typography.bodySmall, color = InnovateTextSecondary)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "${project.status.label} · ROI ${"%.0f".format(project.roiPercent)}%",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                stringResource(
-                    R.string.manager_project_financials,
-                    formatCurrency(project.investmentAmount),
-                    formatCurrency(project.obtainedProfit)
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = InnovateTextSecondary
-            )
-            Text(
-                stringResource(R.string.manager_project_deadline, formatDate(project.deadlineEpochMillis)),
-                style = MaterialTheme.typography.labelSmall,
-                color = InnovateTextSecondary
-            )
         }
     }
 }
