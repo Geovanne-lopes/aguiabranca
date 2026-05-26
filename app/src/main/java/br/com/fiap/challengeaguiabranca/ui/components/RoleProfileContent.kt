@@ -106,7 +106,5 @@ fun RoleProfileContent(
         ) {
             Text(stringResource(R.string.home_logout_account), color = InnovateOnPrimary)
         }
-
-        Spacer(modifier = Modifier.height(72.dp))
     }
 }

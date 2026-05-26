@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.ManagerNotification
 import br.com.fiap.challengeaguiabranca.domain.model.ManagerNotificationType
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -48,7 +49,7 @@ fun ManagerNotificationsDrawerSheet(
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(320.dp),
-        drawerContainerColor = Color.White
+        drawerContainerColor = InnovateSurface
     ) {
         Column(
             modifier = Modifier

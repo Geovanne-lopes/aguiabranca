@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.domain.catalog.MockOperatorsCatalog
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
@@ -77,7 +79,11 @@ fun CollaboratorsChatScreen(
     val messages = remember { mutableStateListOf<ChatMessage>() }
 
     Surface(modifier = modifier.fillMaxSize(), color = InnovateBackground) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,7 +147,7 @@ private fun CollaboratorsList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .premiumListEntrance(0),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = InnovateSurface),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -178,7 +184,7 @@ private fun CollaboratorCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -215,7 +221,7 @@ private fun ChatDetail(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .premiumListEntrance(0),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = InnovateSurface),
             shape = RoundedCornerShape(18.dp)
         ) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -243,7 +249,7 @@ private fun ChatDetail(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(InnovateSurface)
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)

@@ -42,6 +42,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
 import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
 import br.com.fiap.challengeaguiabranca.ui.theme.innovateBorderColor

@@ -1,6 +1,5 @@
 package br.com.fiap.challengeaguiabranca.ui.feature.manager.components
 
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lightbulb
@@ -14,7 +13,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
@@ -33,7 +31,6 @@ fun ManagerBottomBar(
     NavigationBar(
         containerColor = innovateSurfaceColor(),
         tonalElevation = 0.dp,
-        modifier = Modifier.height(64.dp),
         windowInsets = NavigationBarDefaults.windowInsets
     ) {
         NavigationBarItem(

@@ -36,6 +36,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaCategory
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -60,7 +61,7 @@ fun OperatorIdeaFormCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -159,7 +160,7 @@ fun OperatorIdeaListCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

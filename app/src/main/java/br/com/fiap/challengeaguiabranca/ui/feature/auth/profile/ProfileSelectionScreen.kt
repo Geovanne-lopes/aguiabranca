@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.UserRole
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLeaderPurple
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateManagerPink
@@ -181,7 +182,7 @@ private fun ProfileCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface)
     ) {
         Row(
             modifier = Modifier

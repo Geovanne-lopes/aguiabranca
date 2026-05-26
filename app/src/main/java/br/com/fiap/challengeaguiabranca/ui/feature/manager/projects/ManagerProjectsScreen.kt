@@ -57,6 +57,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.Project
 import br.com.fiap.challengeaguiabranca.domain.model.ProjectStatus
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -184,7 +185,7 @@ private fun ProjectCard(
             .fillMaxWidth()
             .padding(vertical = 2.dp),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onEdit
     ) {

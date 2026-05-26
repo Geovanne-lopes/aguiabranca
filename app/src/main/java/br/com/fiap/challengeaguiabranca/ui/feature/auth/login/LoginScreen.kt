@@ -11,12 +11,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -159,21 +159,7 @@ private fun LoginContent(
 
     val accent = currentRoleAccent()
 
-    InnovateScreenBackground(
-        modifier = Modifier.imePadding()
-    ) {
-        IconButton(
-            onClick = onToggleTheme,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 16.dp, end = 20.dp)
-                .size(36.dp)
-                .border(1.dp, innovateBorderColor(), InnovateShapes.Small)
-                .background(innovateSurfaceColor(), InnovateShapes.Small)
-        ) {
-            Text("◐", fontSize = 17.sp, color = InnovateTextPrimary)
-        }
-
+    InnovateScreenBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -348,6 +334,18 @@ private fun LoginContent(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             )
+        }
+
+        IconButton(
+            onClick = onToggleTheme,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp, end = 20.dp)
+                .size(36.dp)
+                .border(1.dp, innovateBorderColor(), InnovateShapes.Small)
+                .background(innovateSurfaceColor(), InnovateShapes.Small)
+        ) {
+            Text("◐", fontSize = 17.sp, color = InnovateTextPrimary)
         }
     }
 }
@@ -535,7 +533,7 @@ private fun ResetPasswordScreen(
 private fun AuthSimpleScaffold(
     title: String,
     onBack: () -> Unit,
-    content: @Composable Column.() -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     InnovateScreenBackground {
         Column(

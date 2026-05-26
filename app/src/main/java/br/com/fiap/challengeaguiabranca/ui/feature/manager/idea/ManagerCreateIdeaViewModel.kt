@@ -59,7 +59,7 @@ class ManagerCreateIdeaViewModel(
             state.description.trim().length < 10 ->
                 _uiState.update { it.copy(errorMessage = "Descrição deve ter pelo menos 10 caracteres.") }
             else -> viewModelScope.launch {
-                _uiState.update { it.copy(isSending = true, errorMessage = null) }
+                _uiState.update { it.copy(isSubmitting = true, errorMessage = null) }
                 runCatching {
                     submitIdeaUseCase(
                         title = state.title,
@@ -70,7 +70,7 @@ class ManagerCreateIdeaViewModel(
                 }.onSuccess {
                     _uiState.update {
                         it.copy(
-                            isSending = false,
+                            isSubmitting = false,
                             title = "",
                             description = "",
                             successMessage = "Ideia registrada com sucesso!"
@@ -78,7 +78,7 @@ class ManagerCreateIdeaViewModel(
                     }
                 }.onFailure { error ->
                     _uiState.update {
-                        it.copy(isSending = false, errorMessage = error.message ?: "Erro ao enviar.")
+                        it.copy(isSubmitting = false, errorMessage = error.message ?: "Erro ao enviar.")
                     }
                 }
             }

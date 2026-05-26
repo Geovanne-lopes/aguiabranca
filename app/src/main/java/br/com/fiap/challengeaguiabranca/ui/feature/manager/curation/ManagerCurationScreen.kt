@@ -47,6 +47,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.catalog.MockOperatorsCatalog
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -150,7 +151,7 @@ private fun CurationIdeaCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

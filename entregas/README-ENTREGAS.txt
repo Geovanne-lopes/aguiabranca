@@ -1,26 +1,27 @@
-Entregas preparadas
+Entregas - Challenge Aguia Branca
+==================================
+
+1. aguiabranca-debug.apk
+   APK Android assinado em modo debug.
+   Instalar diretamente no dispositivo (habilitar "fontes desconhecidas").
+   Tamanho: ~67 MB.
+
+2. codigo-fonte-completo.zip
+   Codigo-fonte completo do projeto Android.
+   Inclui: app/ (sources + manifest + resources), gradle/, gradlew*, build.gradle.kts,
+   settings.gradle.kts, gradle.properties, README.md.
+   Exclui: build outputs, caches do Gradle/IDE, .git e local.properties.
+
+3. documentacao/documentacao-tecnica.pptx
+   Documentacao tecnica (tecnologias, arquitetura, fluxo, perfis e entregaveis).
+   Pode ser regenerada com: powershell -ExecutionPolicy Bypass -File documentacao/gerar-documentacao-pptx.ps1
+
+4. video/roteiro-video-demonstrativo.md
+   Roteiro de ate 5 minutos cobrindo os principais fluxos de cada perfil.
+   O MP4 final sera gravado posteriormente seguindo este roteiro.
+
+Contas demo (login)
 ===================
-
-1. web/
-   Build estatico do preview web, gerado com `npm run build`.
-   Arquivo de entrada: web/index.html
-
-2. apk/
-   Pasta separada para o APK Android.
-   O APK nao foi gerado nesta maquina porque o Android SDK nao esta instalado/configurado.
-   Consulte apk/LEIA-ME-APK.txt para corrigir e gerar o arquivo.
-
-3. codigo-fonte-completo.zip
-   Codigo-fonte completo compactado, sem pastas pesadas/geradas como node_modules, build, .gradle e dist.
-
-4. documentacao/
-   documentacao-tecnica.pptx com tecnologias utilizadas, arquitetura e fluxo da aplicacao.
-
-5. video/
-   roteiro-video-demonstrativo.md com roteiro de ate 5 minutos cobrindo as principais funcionalidades.
-
-Pendencias locais
-=================
-
-- Instalar/configurar Android SDK para gerar o APK.
-- Gravar/exportar o video demonstrativo em MP4 usando o roteiro pronto.
+- Operador  : operador@innovatecorp.com / oper123
+- Gestor    : gestor@innovatecorp.com   / gest123
+- Lideranca : lideranca@innovatecorp.com / lider123

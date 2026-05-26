@@ -46,8 +46,10 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorActivity
 import br.com.fiap.challengeaguiabranca.ui.components.SimpleBarChart
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.KpiStatCard
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateLeaderPurple
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateShapes
 import br.com.fiap.challengeaguiabranca.ui.theme.currentRoleAccent
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
@@ -244,7 +246,7 @@ fun LeaderDashboardScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = InnovateSurface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -286,7 +288,7 @@ private fun QuickAction(
         modifier = modifier
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -319,7 +321,7 @@ private fun TopOperatorRow(rank: Int, operator: OperatorActivity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

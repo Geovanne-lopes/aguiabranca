@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorActivity
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateManagerPink
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
@@ -86,7 +87,7 @@ fun ManagerTeamScreen(
                     Text(stringResource(R.string.manager_team_empty), color = InnovateTextSecondary)
                 }
             } else {
-                itemsIndexed(operators, key = { it.authorId }) { index, operator ->
+                itemsIndexed(operators, key = { _, op -> op.authorId }) { index, operator ->
                     OperatorRankCard(rank = index + 1, operator = operator)
                 }
             }
@@ -99,7 +100,7 @@ fun ManagerTeamScreen(
 private fun OperatorRankCard(rank: Int, operator: OperatorActivity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

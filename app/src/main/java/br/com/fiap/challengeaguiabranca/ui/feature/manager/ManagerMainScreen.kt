@@ -67,9 +67,12 @@ fun ManagerMainScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val isCollaborators = overlay == ManagerOverlay.COLLABORATORS
+    val showMainChrome = overlay == ManagerOverlay.NONE || isCollaborators
+
     RoleThemedScreen(role = UserRole.MANAGER) {
     Box(modifier = Modifier.fillMaxSize()) {
-        if (overlay == ManagerOverlay.NONE) {
+        if (showMainChrome) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
@@ -83,45 +86,58 @@ fun ManagerMainScreen(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = innovateBackgroundColor(),
                     topBar = {
-                        ManagerTopBar(
-                            title = topBarTitle(selectedTab),
-                            showBadge = mainState.hasUnreadNotifications,
-                            onNotificationsClick = {
-                                mainViewModel.markNotificationsAsRead()
-                                scope.launch { drawerState.open() }
-                            },
-                            onLogout = { sessionViewModel.logout(onLogout) }
-                        )
+                        if (!isCollaborators) {
+                            ManagerTopBar(
+                                title = topBarTitle(selectedTab),
+                                showBadge = mainState.hasUnreadNotifications,
+                                onNotificationsClick = {
+                                    mainViewModel.markNotificationsAsRead()
+                                    scope.launch { drawerState.open() }
+                                },
+                                onLogout = { sessionViewModel.logout(onLogout) }
+                            )
+                        }
                     },
                     bottomBar = {
                         ManagerBottomBar(
                             selectedTab = selectedTab,
-                            onTabSelected = { selectedTab = it }
+                            onTabSelected = { tab ->
+                                if (isCollaborators) mainViewModel.closeOverlay()
+                                selectedTab = tab
+                            }
                         )
                     }
                 ) { padding ->
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = premiumTabTransform(),
-                        label = "manager-tabs"
-                    ) { tab ->
-                        when (tab) {
-                            ManagerTab.HOME -> ManagerDashboardScreen(
-                                modifier = Modifier.padding(padding),
-                                onOpenCuration = { selectedTab = ManagerTab.CURATION },
-                                onCreateIdea = mainViewModel::openCreateIdea,
-                                onSendSuggestion = mainViewModel::openSuggestion,
-                            onOpenCollaborators = mainViewModel::openCollaborators,
-                                onViewTeam = mainViewModel::openTeam,
-                                topOperators = mainState.topOperators
-                            )
-                            ManagerTab.CURATION -> ManagerCurationScreen(modifier = Modifier.padding(padding))
-                            ManagerTab.PROJECTS -> ManagerProjectsScreen(modifier = Modifier.padding(padding))
-                            ManagerTab.GUIDELINES -> ManagerGuidelinesScreen(modifier = Modifier.padding(padding))
-                            ManagerTab.PROFILE -> ManagerProfileScreen(
-                                modifier = Modifier.padding(padding),
-                                onLogout = { sessionViewModel.logout(onLogout) }
-                            )
+                    if (isCollaborators) {
+                        CollaboratorsChatScreen(
+                            currentRole = "Gestor",
+                            onBack = mainViewModel::closeOverlay,
+                            modifier = Modifier.padding(padding)
+                        )
+                    } else {
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = premiumTabTransform(),
+                            label = "manager-tabs"
+                        ) { tab ->
+                            when (tab) {
+                                ManagerTab.HOME -> ManagerDashboardScreen(
+                                    modifier = Modifier.padding(padding),
+                                    onOpenCuration = { selectedTab = ManagerTab.CURATION },
+                                    onCreateIdea = mainViewModel::openCreateIdea,
+                                    onSendSuggestion = mainViewModel::openSuggestion,
+                                    onOpenCollaborators = mainViewModel::openCollaborators,
+                                    onViewTeam = mainViewModel::openTeam,
+                                    topOperators = mainState.topOperators
+                                )
+                                ManagerTab.CURATION -> ManagerCurationScreen(modifier = Modifier.padding(padding))
+                                ManagerTab.PROJECTS -> ManagerProjectsScreen(modifier = Modifier.padding(padding))
+                                ManagerTab.GUIDELINES -> ManagerGuidelinesScreen(modifier = Modifier.padding(padding))
+                                ManagerTab.PROFILE -> ManagerProfileScreen(
+                                    modifier = Modifier.padding(padding),
+                                    onLogout = { sessionViewModel.logout(onLogout) }
+                                )
+                            }
                         }
                     }
                 }
@@ -140,10 +156,7 @@ fun ManagerMainScreen(
                 onBack = mainViewModel::closeOverlay,
                 onSuccess = mainViewModel::closeOverlay
             )
-            ManagerOverlay.COLLABORATORS -> CollaboratorsChatScreen(
-                currentRole = "Gestor",
-                onBack = mainViewModel::closeOverlay
-            )
+            ManagerOverlay.COLLABORATORS -> Unit
             ManagerOverlay.NONE -> Unit
         }
     }

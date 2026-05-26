@@ -66,9 +66,12 @@ fun LeaderMainScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val isCollaborators = overlay == LeaderOverlay.COLLABORATORS
+    val showMainChrome = overlay == LeaderOverlay.NONE || isCollaborators
+
     RoleThemedScreen(role = UserRole.LEADER) {
     Box(modifier = Modifier.fillMaxSize()) {
-        if (overlay == LeaderOverlay.NONE) {
+        if (showMainChrome) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
@@ -82,48 +85,61 @@ fun LeaderMainScreen(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = innovateBackgroundColor(),
                     topBar = {
-                        LeaderTopBar(
-                            title = topBarTitle(selectedTab),
-                            showBadge = mainState.hasUnreadNotifications,
-                            onNotificationsClick = {
-                                mainViewModel.markNotificationsAsRead()
-                                scope.launch { drawerState.open() }
-                            },
-                            onLogout = { sessionViewModel.logout(onLogout) }
-                        )
+                        if (!isCollaborators) {
+                            LeaderTopBar(
+                                title = topBarTitle(selectedTab),
+                                showBadge = mainState.hasUnreadNotifications,
+                                onNotificationsClick = {
+                                    mainViewModel.markNotificationsAsRead()
+                                    scope.launch { drawerState.open() }
+                                },
+                                onLogout = { sessionViewModel.logout(onLogout) }
+                            )
+                        }
                     },
                     bottomBar = {
                         LeaderBottomBar(
                             selectedTab = selectedTab,
-                            onTabSelected = { selectedTab = it }
+                            onTabSelected = { tab ->
+                                if (isCollaborators) mainViewModel.closeOverlay()
+                                selectedTab = tab
+                            }
                         )
                     }
                 ) { padding ->
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = premiumTabTransform(),
-                        label = "leader-tabs"
-                    ) { tab ->
-                        when (tab) {
-                            LeaderTab.HOME -> LeaderDashboardScreen(
-                                modifier = Modifier.padding(padding),
-                                monthlyRanking = mainState.monthlyRanking,
-                                onSendSuggestion = mainViewModel::openSuggestion,
-                                onViewTeam = { selectedTab = LeaderTab.TEAM },
-                                onCreateGuideline = { selectedTab = LeaderTab.GUIDELINES },
-                                onOpenCollaborators = mainViewModel::openCollaborators
-                            )
-                            LeaderTab.GUIDELINES -> LeaderGuidelinesScreen(modifier = Modifier.padding(padding))
-                            LeaderTab.TEAM -> LeaderTeamSection(
-                                monthlyRanking = mainState.monthlyRanking,
-                                overallRanking = mainState.overallRanking,
-                                modifier = Modifier.padding(padding)
-                            )
-                            LeaderTab.TRACKING -> LeaderTrackingScreen(modifier = Modifier.padding(padding))
-                            LeaderTab.PROFILE -> LeaderProfileScreen(
-                                modifier = Modifier.padding(padding),
-                                onLogout = { sessionViewModel.logout(onLogout) }
-                            )
+                    if (isCollaborators) {
+                        CollaboratorsChatScreen(
+                            currentRole = "Líder",
+                            onBack = mainViewModel::closeOverlay,
+                            modifier = Modifier.padding(padding)
+                        )
+                    } else {
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = premiumTabTransform(),
+                            label = "leader-tabs"
+                        ) { tab ->
+                            when (tab) {
+                                LeaderTab.HOME -> LeaderDashboardScreen(
+                                    modifier = Modifier.padding(padding),
+                                    monthlyRanking = mainState.monthlyRanking,
+                                    onSendSuggestion = mainViewModel::openSuggestion,
+                                    onViewTeam = { selectedTab = LeaderTab.TEAM },
+                                    onCreateGuideline = { selectedTab = LeaderTab.GUIDELINES },
+                                    onOpenCollaborators = mainViewModel::openCollaborators
+                                )
+                                LeaderTab.GUIDELINES -> LeaderGuidelinesScreen(modifier = Modifier.padding(padding))
+                                LeaderTab.TEAM -> LeaderTeamSection(
+                                    monthlyRanking = mainState.monthlyRanking,
+                                    overallRanking = mainState.overallRanking,
+                                    modifier = Modifier.padding(padding)
+                                )
+                                LeaderTab.TRACKING -> LeaderTrackingScreen(modifier = Modifier.padding(padding))
+                                LeaderTab.PROFILE -> LeaderProfileScreen(
+                                    modifier = Modifier.padding(padding),
+                                    onLogout = { sessionViewModel.logout(onLogout) }
+                                )
+                            }
                         }
                     }
                 }
@@ -132,10 +148,7 @@ fun LeaderMainScreen(
 
         when (overlay) {
             LeaderOverlay.SUGGESTION -> ManagerSuggestionScreen(onBack = mainViewModel::closeOverlay)
-            LeaderOverlay.COLLABORATORS -> CollaboratorsChatScreen(
-                currentRole = "Líder",
-                onBack = mainViewModel::closeOverlay
-            )
+            LeaderOverlay.COLLABORATORS -> Unit
             LeaderOverlay.NONE -> Unit
         }
     }

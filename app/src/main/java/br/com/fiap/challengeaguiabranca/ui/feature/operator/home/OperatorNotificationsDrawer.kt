@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorNotification
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorNotificationType
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -49,7 +50,7 @@ fun OperatorNotificationsDrawerSheet(
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(320.dp),
-        drawerContainerColor = Color.White
+        drawerContainerColor = InnovateSurface
     ) {
         Column(
             modifier = Modifier

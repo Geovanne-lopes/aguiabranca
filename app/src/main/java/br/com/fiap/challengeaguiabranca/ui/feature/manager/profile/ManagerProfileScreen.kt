@@ -54,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -200,7 +201,7 @@ fun ManagerProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .premiumListEntrance(1),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = InnovateSurface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -227,7 +228,7 @@ fun ManagerProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .premiumListEntrance(2),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = InnovateSurface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Ritmo de curadoria", fontWeight = FontWeight.Bold)
@@ -302,8 +303,6 @@ fun ManagerProfileScreen(
                 ) {
                     Text(stringResource(R.string.home_logout_account), color = InnovateOnPrimary)
                 }
-
-                Spacer(modifier = Modifier.height(72.dp))
             }
         }
 

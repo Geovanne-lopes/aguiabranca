@@ -5,11 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -26,47 +28,27 @@ object InnovateShapes {
 }
 
 @Composable
-fun innovateBackgroundColor(): Color =
-    if (MaterialTheme.colorScheme.background == InnovateBackgroundDark) {
-        InnovateBackgroundDark
-    } else {
-        InnovateBackground
-    }
+fun innovateBackgroundColor(): Color = InnovateBackground
 
 @Composable
-fun innovateSurfaceColor(): Color = MaterialTheme.colorScheme.surface
+fun innovateSurfaceColor(): Color = InnovateSurface
 
 @Composable
-fun innovateSurface2Color(): Color =
-    if (MaterialTheme.colorScheme.background == InnovateBackgroundDark) {
-        InnovateSurface2Dark
-    } else {
-        InnovateSurface2
-    }
+fun innovateSurface2Color(): Color = InnovateSurface2
 
 @Composable
-fun innovateBorderColor(): Color =
-    if (MaterialTheme.colorScheme.background == InnovateBackgroundDark) {
-        InnovateBorderDark
-    } else {
-        InnovateBorder
-    }
+fun innovateBorderColor(): Color = InnovateBorder
 
 @Composable
-fun innovateLinkColor(): Color =
-    if (MaterialTheme.colorScheme.background == InnovateBackgroundDark) {
-        InnovateLinkDark
-    } else {
-        InnovateLink
-    }
+fun innovateLinkColor(): Color = InnovateLink
 
 @Composable
 fun InnovateScreenBackground(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.background == InnovateBackgroundDark
-    val base = if (isDark) InnovateBackgroundDark else InnovateBackground
+    val isDark = LocalInnovateDarkTheme.current
+    val base = if (isDark) InnovateBackgroundDark else InnovateBackgroundLight
     val brush = if (isDark) {
         Brush.radialGradient(
             colors = listOf(InnovatePrimary.copy(alpha = 0.2f), Color.Transparent),
@@ -79,12 +61,18 @@ fun InnovateScreenBackground(
         )
     }
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(base)
             .background(brush)
     ) {
-        content()
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
+            content()
+        }
     }
 }
 

@@ -15,16 +15,16 @@ private fun lightColorScheme(accent: RoleAccent) = lightColorScheme(
     primary = accent.accent,
     onPrimary = InnovateOnPrimary,
     primaryContainer = InnovatePrimaryLight,
-    onPrimaryContainer = InnovateTextPrimary,
+    onPrimaryContainer = InnovateTextPrimaryLight,
     secondary = InnovateManagerPink,
-    background = InnovateBackground,
-    onBackground = InnovateTextPrimary,
-    surface = InnovateSurface,
-    onSurface = InnovateTextPrimary,
-    surfaceVariant = InnovateSurface2,
-    onSurfaceVariant = InnovateTextSecondary,
+    background = InnovateBackgroundLight,
+    onBackground = InnovateTextPrimaryLight,
+    surface = InnovateSurfaceLight,
+    onSurface = InnovateTextPrimaryLight,
+    surfaceVariant = InnovateSurface2Light,
+    onSurfaceVariant = InnovateTextSecondaryLight,
     error = InnovateError,
-    outline = InnovateBorder
+    outline = InnovateBorderLight
 )
 
 private fun darkColorScheme(accent: RoleAccent) = darkColorScheme(

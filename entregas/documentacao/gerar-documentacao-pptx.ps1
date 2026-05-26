@@ -26,76 +26,109 @@ $slides = @(
         Title = "Challenge Águia Branca"
         Lines = @(
             "Gestão de Inovação Corporativa",
-            "Aplicativo Android nativo com preview web para demonstração",
-            "Perfis: Operador, Gestor e Líder"
+            "Aplicativo Android nativo (Kotlin + Jetpack Compose)",
+            "Três perfis com fluxos dedicados: Operador, Gestor e Líder",
+            "Tema dinâmico (claro/escuro) e identidade visual por perfil"
         )
     },
     @{
         Title = "Tecnologias Utilizadas"
         Lines = @(
-            "Android: Kotlin, Jetpack Compose, Material 3 e Navigation Compose",
-            "Arquitetura: MVVM + Clean Architecture",
+            "Linguagem: Kotlin 2.x",
+            "UI: Jetpack Compose + Material 3 (BOM 2026.05.00)",
+            "Arquitetura: MVVM + Clean Architecture (data / domain / ui)",
             "Injeção de dependência: Koin",
-            "Persistência local: Room e DataStore",
-            "Rede: Retrofit, OkHttp e Kotlinx Serialization",
-            "Web preview: Vite, JavaScript, HTML e CSS"
+            "Persistência local: Room + DataStore",
+            "Rede: Retrofit + OkHttp + Kotlinx Serialization",
+            "Concorrência: Coroutines + Flow",
+            "Gradle Kotlin DSL com Version Catalog (libs.versions.toml)"
         )
     },
     @{
         Title = "Arquitetura da Solução"
         Lines = @(
-            "Camada Data: APIs remotas, banco local Room, DAOs, DTOs e repositórios",
-            "Camada Domain: modelos, contratos de repositório e casos de uso",
-            "Camada UI: telas Compose, ViewModels, estados de tela e componentes reutilizáveis",
-            "Separação por feature: auth, operator, manager e leader"
+            "Camada Data: APIs remotas (Retrofit), banco local Room, DAOs, DTOs, mappers e repositórios",
+            "Camada Domain: modelos puros, contratos de repositório e Use Cases por feature",
+            "Camada UI: telas Compose, ViewModels com StateFlow e componentes reutilizáveis",
+            "Organização por feature: auth, operator, manager, leader e shared",
+            "Navegação centralizada com Compose Navigation",
+            "RoleThemedScreen aplica esquema de cores por perfil em runtime"
+        )
+    },
+    @{
+        Title = "Conectividade com Serviços Externos"
+        Lines = @(
+            "REST API real - FakerAPI (https://fakerapi.it/api/v1/users) para seed inicial de usuários",
+            "REST API real - AdviceSlip (https://api.adviceslip.com/advice) para o Insight do Dia",
+            "Banco de dados local em Room com 4 entidades: Idea, Project, StrategicGuideline e Session",
+            "DAO + Flow para reatividade ponta a ponta entre banco e UI",
+            "Tratamento robusto de erros e estados de loading/empty/error em cada chamada"
         )
     },
     @{
         Title = "Fluxo da Aplicação"
         Lines = @(
-            "1. Usuário acessa a tela de login",
-            "2. Credenciais mockadas definem automaticamente o perfil",
-            "3. A sessão é salva localmente",
-            "4. A navegação direciona para a home correta do perfil",
-            "5. Cada perfil acessa funcionalidades específicas por regra de negócio"
+            "1. Tela de login com seleção e validação de credenciais por perfil",
+            "2. Sessão persistida localmente via Room (SessionRepository)",
+            "3. Navegação direciona automaticamente para a home do perfil logado",
+            "4. Cada perfil enxerga abas e ações conforme as regras de negócio",
+            "5. Logout limpa a sessão e retorna para o login"
         )
     },
     @{
         Title = "Funcionalidades do Operador"
         Lines = @(
-            "Home com KPIs, insight do dia e diretrizes estratégicas",
-            "Cadastro de novas ideias e reporte de problemas",
-            "Listagem das próprias ideias com status",
-            "Perfil com gamificação, pontos e resumo de participação"
+            "Home com KPIs pessoais, banner de gamificação e ações rápidas",
+            "Insight do Dia carregado via API REST externa",
+            "Cadastro e listagem de ideias com categoria e status",
+            "Acesso à equipe via Chat de Colaboradores (filtra por relação direta)",
+            "Consulta às diretrizes estratégicas (read-only)",
+            "Perfil com avatar customizável, pontos e nível de gamificação"
         )
     },
     @{
         Title = "Funcionalidades do Gestor"
         Lines = @(
-            "Dashboard tático com indicadores e gráfico de ideias",
+            "Dashboard tático com indicadores agregados e gráfico de ideias",
             "Curadoria de ideias: aprovar, reprovar e priorizar",
-            "CRUD de projetos a partir de ideias aprovadas",
-            "Consulta das diretrizes da liderança",
-            "Perfil e visão de equipe"
+            "CRUD completo de projetos a partir das ideias aprovadas",
+            "Atualização de progresso, status, prazo e retorno financeiro",
+            "Envio de sugestões para a liderança",
+            "Chat com colaboradores diretos e visão de equipe",
+            "Consulta às diretrizes estratégicas"
         )
     },
     @{
         Title = "Funcionalidades do Líder"
         Lines = @(
-            "Dashboard executivo de ROI, investimento, lucro e produtividade",
-            "CRUD de diretrizes estratégicas",
-            "Acompanhamento dos projetos com prazo, status e retorno",
-            "Notificações e visão estratégica consolidada"
+            "Dashboard executivo: ROI, investimento, lucro, prazo e produtividade",
+            "CRUD completo de diretrizes estratégicas",
+            "Acompanhamento de projetos com etapa, status, investimento e retorno",
+            "Ranking mensal e geral da equipe",
+            "Recebimento de sugestões dos gestores",
+            "Chat com gestores e visão estratégica consolidada"
+        )
+    },
+    @{
+        Title = "UX e Diferenciais"
+        Lines = @(
+            "Tema dinâmico claro/escuro com alternância em tempo real",
+            "Paleta e header coloridos por perfil (operador, gestor, líder)",
+            "Animações premium de transição entre abas e entrada de lista",
+            "Tratamento correto de insets do sistema (status bar e barra de gestos)",
+            "Gamificação: pontos, níveis e progresso de participação",
+            "Notificações in-app por perfil com badge de não lidos",
+            "Componentes reutilizáveis (InnovateCard, InnovateScreenBackground, etc.)"
         )
     },
     @{
         Title = "Entregáveis"
         Lines = @(
-            "Pasta web: build estático do preview no navegador",
-            "Pasta apk: local destinado ao APK Android",
+            "APK Android assinado em modo debug",
             "Código-fonte completo compactado em .zip",
             "Documentação técnica em PPTX",
-            "Material de apoio para vídeo demonstrativo de até 5 minutos"
+            "Roteiro do vídeo demonstrativo (até 5 minutos)",
+            "Critérios atendidos: autenticação, CRUD por perfil, dashboard de ROI e conectividade REST + DB local"
         )
     }
 )
@@ -151,7 +184,7 @@ for ($i = 0; $i -lt $slides.Count; $i++) {
     $title = Escape-Xml $slides[$i].Title
     $bodyParagraphs = ""
     foreach ($line in $slides[$i].Lines) {
-        $bodyParagraphs += "<a:p><a:r><a:rPr lang=`"pt-BR`" sz=`"2200`"/><a:t>$(Escape-Xml $line)</a:t></a:r></a:p>"
+        $bodyParagraphs += "<a:p><a:r><a:rPr lang=`"pt-BR`" sz=`"2000`"><a:solidFill><a:srgbClr val=`"E2E8F0`"/></a:solidFill></a:rPr><a:t>$(Escape-Xml $line)</a:t></a:r></a:p>"
     }
 
     $slideXml = @"
@@ -165,7 +198,7 @@ for ($i = 0; $i -lt $slides.Count; $i++) {
       <p:sp>
         <p:nvSpPr><p:cNvPr id="2" name="Title"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr>
         <p:spPr><a:xfrm><a:off x="685800" y="457200"/><a:ext cx="10820400" cy="1143000"/></a:xfrm></p:spPr>
-        <p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="pt-BR" sz="4000" b="1"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill></a:rPr><a:t>$title</a:t></a:r></a:p></p:txBody>
+        <p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="pt-BR" sz="4000" b="1"><a:solidFill><a:srgbClr val="6C5CE7"/></a:solidFill></a:rPr><a:t>$title</a:t></a:r></a:p></p:txBody>
       </p:sp>
       <p:sp>
         <p:nvSpPr><p:cNvPr id="3" name="Content"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr>
@@ -188,4 +221,4 @@ for ($i = 0; $i -lt $slides.Count; $i++) {
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [System.IO.Compression.ZipFile]::CreateFromDirectory($temp, $out)
 Remove-Item $temp -Recurse -Force
-Write-Host "Documentação gerada em $out"
+Write-Host "Documentacao gerada em $out"

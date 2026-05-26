@@ -95,7 +95,8 @@ fun OperatorHomeScreen(
         }
     }
 
-    val showMainChrome = overlay == OperatorOverlay.NONE
+    val isCollaborators = overlay == OperatorOverlay.COLLABORATORS
+    val showMainChrome = overlay == OperatorOverlay.NONE || isCollaborators
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -117,47 +118,60 @@ fun OperatorHomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = innovateBackgroundColor(),
                     topBar = {
-                        OperatorTopBar(
-                            title = topBarTitleForTab(selectedTab),
-                            showNotificationBadge = uiState.hasUnreadNotifications,
-                            onNotificationsClick = {
-                                homeViewModel.markNotificationsAsRead()
-                                scope.launch { drawerState.open() }
-                            }
-                        )
+                        if (!isCollaborators) {
+                            OperatorTopBar(
+                                title = topBarTitleForTab(selectedTab),
+                                showNotificationBadge = uiState.hasUnreadNotifications,
+                                onNotificationsClick = {
+                                    homeViewModel.markNotificationsAsRead()
+                                    scope.launch { drawerState.open() }
+                                }
+                            )
+                        }
                     },
                     bottomBar = {
                         OperatorBottomBar(
                             selectedTab = selectedTab,
-                            onTabSelected = homeViewModel::selectTab
+                            onTabSelected = { tab ->
+                                if (isCollaborators) homeViewModel.closeOverlay()
+                                homeViewModel.selectTab(tab)
+                            }
                         )
                     }
                 ) { padding ->
-                    AnimatedContent(
-                        targetState = selectedTab,
-                        transitionSpec = premiumTabTransform(),
-                        label = "operator-tabs"
-                    ) { tab ->
-                        when (tab) {
-                            OperatorTab.HOME -> OperatorHomeContent(
-                                uiState = uiState,
-                                modifier = Modifier.padding(padding),
-                                onNewIdeaClick = { homeViewModel.openSubmitIdea(IdeaCategory.PROCESS) },
-                                onReportProblemClick = { homeViewModel.openSubmitIdea(IdeaCategory.OTHER) },
-                            onCollaboratorsClick = homeViewModel::openCollaborators,
-                                onViewAllIdeasClick = homeViewModel::openAllIdeas,
-                                onRetryInsight = homeViewModel::loadInsight
-                            )
-                            OperatorTab.IDEAS -> OperatorIdeasScreen(
-                                modifier = Modifier.padding(padding)
-                            )
-                            OperatorTab.PROFILE -> OperatorProfileScreen(
-                                modifier = Modifier.padding(padding),
-                                onLogout = { homeViewModel.logout(onLogout) }
-                            )
-                            OperatorTab.STRATEGIES -> OperatorStrategiesScreen(
-                                modifier = Modifier.padding(padding)
-                            )
+                    if (isCollaborators) {
+                        CollaboratorsChatScreen(
+                            currentRole = "Operador",
+                            onBack = homeViewModel::closeOverlay,
+                            modifier = Modifier.padding(padding)
+                        )
+                    } else {
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = premiumTabTransform(),
+                            label = "operator-tabs"
+                        ) { tab ->
+                            when (tab) {
+                                OperatorTab.HOME -> OperatorHomeContent(
+                                    uiState = uiState,
+                                    modifier = Modifier.padding(padding),
+                                    onNewIdeaClick = { homeViewModel.openSubmitIdea(IdeaCategory.PROCESS) },
+                                    onReportProblemClick = { homeViewModel.openSubmitIdea(IdeaCategory.OTHER) },
+                                    onCollaboratorsClick = homeViewModel::openCollaborators,
+                                    onViewAllIdeasClick = homeViewModel::openAllIdeas,
+                                    onRetryInsight = homeViewModel::loadInsight
+                                )
+                                OperatorTab.IDEAS -> OperatorIdeasScreen(
+                                    modifier = Modifier.padding(padding)
+                                )
+                                OperatorTab.PROFILE -> OperatorProfileScreen(
+                                    modifier = Modifier.padding(padding),
+                                    onLogout = { homeViewModel.logout(onLogout) }
+                                )
+                                OperatorTab.STRATEGIES -> OperatorStrategiesScreen(
+                                    modifier = Modifier.padding(padding)
+                                )
+                            }
                         }
                     }
                 }
@@ -183,10 +197,7 @@ fun OperatorHomeScreen(
                     homeViewModel.closeOverlay()
                 }
             )
-            OperatorOverlay.COLLABORATORS -> CollaboratorsChatScreen(
-                currentRole = "Operador",
-                onBack = homeViewModel::closeOverlay
-            )
+            OperatorOverlay.COLLABORATORS -> Unit
             OperatorOverlay.NONE -> Unit
         }
     }

@@ -326,26 +326,13 @@ Respostas esperadas ao violar perfil: **`403 Forbidden`** (corpo com código, ex
 2. Sync Gradle.
 3. Executar em emulador/dispositivo API 28+.
 
-### Preview no navegador (somente visualização)
+### Contas demo
 
-O app Android e o `web-preview/` compartilham a mesma identidade visual InnovateCorp (paleta, tema por perfil, login com chips demo, cards e navegação). O preview web serve para navegar no browser; o Android é o app completo com Room e APIs.
-
-**Requisito:** [Node.js](https://nodejs.org/) instalado.
-
-```powershell
-# Na raiz do projeto
-.\preview.ps1
-```
-
-Ou manualmente:
-
-```bash
-cd web-preview
-npm install
-npm run dev
-```
-
-Abre em **http://localhost:5173**. Use as mesmas contas demo do login Android (`operador@…`, `gestor@…`, `lideranca@…`).
+| Perfil | E-mail | Senha |
+|--------|--------|-------|
+| Operador | `operador@innovatecorp.com` | `oper123` |
+| Gestor | `gestor@innovatecorp.com` | `gest123` |
+| Liderança | `lideranca@innovatecorp.com` | `lider123` |
 
 ---
 

@@ -40,6 +40,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaCategory
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
+import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextSecondary
@@ -162,7 +163,7 @@ private fun OperatorIdeasContent(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = InnovateSurface)
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
@@ -196,7 +197,5 @@ private fun OperatorIdeasContent(
                 OperatorIdeaListCard(idea = idea)
             }
         }
-
-        item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 }
