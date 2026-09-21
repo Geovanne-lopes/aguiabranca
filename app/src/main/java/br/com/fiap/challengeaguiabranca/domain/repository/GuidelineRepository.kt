@@ -1,5 +1,6 @@
 package br.com.fiap.challengeaguiabranca.domain.repository
 
+import br.com.fiap.challengeaguiabranca.domain.model.GuidelineHistoryEntry
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import kotlinx.coroutines.flow.Flow
 
@@ -9,4 +10,5 @@ interface GuidelineRepository {
     suspend fun insert(guideline: StrategicGuideline)
     suspend fun update(guideline: StrategicGuideline)
     suspend fun delete(id: String)
+    suspend fun history(guidelineId: String): List<GuidelineHistoryEntry>
 }

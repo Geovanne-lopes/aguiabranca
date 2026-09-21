@@ -22,22 +22,22 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { RoleHomeViewModel(get(), get()) }
     viewModel { OperatorHomeViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { OperatorIdeasViewModel(get(), get(), get()) }
+    viewModel { OperatorIdeasViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { OperatorProfileViewModel(get(), get(), get(), get()) }
-    viewModel { ManagerMainViewModel(get(), get(), get()) }
-    viewModel { ManagerDashboardViewModel(get(), get(), get()) }
-    viewModel { ManagerSuggestionViewModel(get(), get()) }
+    viewModel { ManagerMainViewModel(get(), get()) }
+    viewModel { ManagerDashboardViewModel(get(), get()) }
+    viewModel { ManagerSuggestionViewModel(get(), get(), get()) }
     viewModel { ManagerCreateIdeaViewModel(get(), get()) }
     viewModel { ManagerCurationViewModel(get(), get()) }
     viewModel { ManagerGuidelinesViewModel(get()) }
-    viewModel { ManagerProjectsViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { ManagerProjectsViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { ManagerProfileViewModel(get(), get(), get(), get(), get()) }
-    viewModel { LeaderMainViewModel(get(), get(), get(), get()) }
-    viewModel { LeaderDashboardViewModel(get(), get()) }
-    viewModel { LeaderGuidelinesViewModel(get(), get(), get(), get(), get()) }
+    viewModel { LeaderMainViewModel(get(), get(), get()) }
+    viewModel { LeaderDashboardViewModel(get(), get(), get(), get(), get()) }
+    viewModel { LeaderGuidelinesViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { LeaderProfileViewModel(get(), get(), get(), get(), get()) }
     viewModel { LeaderTrackingViewModel(get()) }
 }

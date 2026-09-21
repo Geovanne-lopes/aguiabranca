@@ -2,9 +2,10 @@ package br.com.fiap.challengeaguiabranca.ui.feature.manager.suggestion
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fiap.challengeaguiabranca.domain.catalog.MockOperatorsCatalog
+import br.com.fiap.challengeaguiabranca.domain.model.User
 import br.com.fiap.challengeaguiabranca.domain.usecase.manager.SendManagerSuggestionUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.ObserveCurrentUserUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.user.ListOperatorsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,7 +29,8 @@ data class OperatorOption(
 
 class ManagerSuggestionViewModel(
     observeCurrentUserUseCase: ObserveCurrentUserUseCase,
-    private val sendManagerSuggestionUseCase: SendManagerSuggestionUseCase
+    private val sendManagerSuggestionUseCase: SendManagerSuggestionUseCase,
+    private val listOperatorsUseCase: ListOperatorsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ManagerSuggestionUiState())
@@ -37,18 +39,26 @@ class ManagerSuggestionViewModel(
     init {
         viewModelScope.launch {
             observeCurrentUserUseCase().collect { user ->
-                _uiState.update {
-                    it.copy(
-                        managerName = user?.name ?: "",
-                        operators = MockOperatorsCatalog.operators.map { op ->
-                            OperatorOption(op.id, op.name, op.email)
-                        },
-                        selectedOperatorId = it.selectedOperatorId.ifBlank {
-                            MockOperatorsCatalog.operators.firstOrNull()?.id ?: ""
-                        }
-                    )
-                }
+                _uiState.update { it.copy(managerName = user?.name ?: "") }
             }
+        }
+        viewModelScope.launch {
+            runCatching { listOperatorsUseCase() }
+                .onSuccess { operators ->
+                    _uiState.update {
+                        it.copy(
+                            operators = operators.map { user -> user.toOption() },
+                            selectedOperatorId = it.selectedOperatorId.ifBlank {
+                                operators.firstOrNull()?.id ?: ""
+                            }
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(errorMessage = error.message ?: "Não foi possível carregar os operadores.")
+                    }
+                }
         }
     }
 
@@ -95,3 +105,5 @@ class ManagerSuggestionViewModel(
         _uiState.update { it.copy(successMessage = null) }
     }
 }
+
+private fun User.toOption() = OperatorOption(id = id, name = name, email = email)

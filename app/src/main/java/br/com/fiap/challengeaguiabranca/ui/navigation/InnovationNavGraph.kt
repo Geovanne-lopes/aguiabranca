@@ -1,22 +1,32 @@
 package br.com.fiap.challengeaguiabranca.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import br.com.fiap.challengeaguiabranca.data.remote.auth.SessionExpiry
 import br.com.fiap.challengeaguiabranca.ui.feature.auth.login.LoginScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.leader.home.LeaderHomeScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.manager.home.ManagerHomeScreen
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.home.OperatorHomeScreen
+
+import org.koin.compose.koinInject
 
 @Composable
 fun InnovationNavGraph(
     navController: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    onToggleTheme: () -> Unit = {}
+    onToggleTheme: () -> Unit = {},
+    sessionExpiry: SessionExpiry = koinInject()
 ) {
+    LaunchedEffect(navController) {
+        sessionExpiry.events.collect {
+            navigateToLogin(navController)
+        }
+    }
     NavHost(
         navController = navController,
         startDestination = startDestination,

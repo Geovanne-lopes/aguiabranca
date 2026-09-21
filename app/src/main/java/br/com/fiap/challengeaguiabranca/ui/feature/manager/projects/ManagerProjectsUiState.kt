@@ -3,10 +3,12 @@ package br.com.fiap.challengeaguiabranca.ui.feature.manager.projects
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.Project
 import br.com.fiap.challengeaguiabranca.domain.model.ProjectStatus
+import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 
 data class ManagerProjectsUiState(
     val projects: List<Project> = emptyList(),
     val eligibleIdeas: List<Idea> = emptyList(),
+    val guidelines: List<StrategicGuideline> = emptyList(),
     val isLoading: Boolean = true,
     val createDialogVisible: Boolean = false,
     val selectedIdeaId: String? = null,
@@ -24,5 +26,6 @@ data class ProjectEditForm(
     val investmentText: String = "",
     val profitText: String = "",
     val productivityText: String = "",
-    val deadlineDaysText: String = ""
+    val deadlineDaysText: String = "",
+    val guidelineId: String? = null
 )

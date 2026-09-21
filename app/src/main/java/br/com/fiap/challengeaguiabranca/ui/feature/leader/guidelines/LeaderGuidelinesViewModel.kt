@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.CreateGuidelineUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.DeleteGuidelineUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.GetGuidelineHistoryUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.ObserveGuidelinesUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.UpdateGuidelineUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.ObserveCurrentUserUseCase
@@ -18,7 +19,8 @@ class LeaderGuidelinesViewModel(
     observeGuidelinesUseCase: ObserveGuidelinesUseCase,
     private val createGuidelineUseCase: CreateGuidelineUseCase,
     private val updateGuidelineUseCase: UpdateGuidelineUseCase,
-    private val deleteGuidelineUseCase: DeleteGuidelineUseCase
+    private val deleteGuidelineUseCase: DeleteGuidelineUseCase,
+    private val getGuidelineHistoryUseCase: GetGuidelineHistoryUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LeaderGuidelinesUiState())
@@ -56,7 +58,9 @@ class LeaderGuidelinesViewModel(
                     isVisible = true,
                     editingId = guideline.id,
                     title = guideline.title,
-                    content = guideline.content
+                    content = guideline.content,
+                    category = guideline.category.orEmpty(),
+                    campaign = guideline.campaign.orEmpty()
                 ),
                 message = null
             )
@@ -75,6 +79,14 @@ class LeaderGuidelinesViewModel(
         _uiState.update { it.copy(form = it.form.copy(content = value)) }
     }
 
+    fun onCategoryChange(value: String) {
+        _uiState.update { it.copy(form = it.form.copy(category = value)) }
+    }
+
+    fun onCampaignChange(value: String) {
+        _uiState.update { it.copy(form = it.form.copy(campaign = value)) }
+    }
+
     fun saveForm() {
         val form = _uiState.value.form
         val userId = authorId
@@ -82,12 +94,22 @@ class LeaderGuidelinesViewModel(
             userId == null -> showMessage("Sessão inválida.")
             form.title.trim().length < 3 -> showMessage("Título deve ter pelo menos 3 caracteres.")
             form.content.trim().length < 10 -> showMessage("Conteúdo deve ter pelo menos 10 caracteres.")
+            form.category.isBlank() || form.category.trim().length > 40 ->
+                showMessage("Categoria é obrigatória e deve ter no máximo 40 caracteres.")
+            form.campaign.isBlank() || form.campaign.trim().length > 80 ->
+                showMessage("Campanha é obrigatória e deve ter no máximo 80 caracteres.")
             else -> viewModelScope.launch {
                 _uiState.update { it.copy(isSaving = true) }
                 val editingId = form.editingId
                 val result = if (editingId == null) {
                     runCatching {
-                        createGuidelineUseCase(form.title, form.content, userId)
+                        createGuidelineUseCase(
+                            form.title,
+                            form.content,
+                            form.category.trim(),
+                            form.campaign.trim(),
+                            userId
+                        )
                     }
                 } else {
                     val existing = guidelinesCache.find { it.id == editingId }
@@ -96,7 +118,12 @@ class LeaderGuidelinesViewModel(
                     } else {
                         runCatching {
                             updateGuidelineUseCase(
-                                existing.copy(title = form.title.trim(), content = form.content.trim())
+                                existing.copy(
+                                    title = form.title.trim(),
+                                    content = form.content.trim(),
+                                    category = form.category.trim(),
+                                    campaign = form.campaign.trim()
+                                )
                             )
                         }
                     }
@@ -128,6 +155,35 @@ class LeaderGuidelinesViewModel(
                     _uiState.update { it.copy(message = error.message ?: "Erro ao remover.") }
                 }
         }
+    }
+
+    fun openHistory(guideline: StrategicGuideline) {
+        _uiState.update {
+            it.copy(
+                history = GuidelineHistoryState(isVisible = true, title = guideline.title, isLoading = true),
+                message = null
+            )
+        }
+        viewModelScope.launch {
+            runCatching { getGuidelineHistoryUseCase(guideline.id) }
+                .onSuccess { items ->
+                    _uiState.update {
+                        it.copy(history = it.history.copy(items = items, isLoading = false))
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            history = GuidelineHistoryState(),
+                            message = error.message ?: "Erro ao carregar o histórico."
+                        )
+                    }
+                }
+        }
+    }
+
+    fun closeHistory() {
+        _uiState.update { it.copy(history = GuidelineHistoryState()) }
     }
 
     fun clearMessage() {

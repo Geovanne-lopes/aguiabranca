@@ -12,6 +12,6 @@ interface IdeaRepository {
     suspend fun countByStatus(status: IdeaStatus): Int
     suspend fun insert(idea: Idea)
     suspend fun update(idea: Idea)
-    suspend fun updateStatus(id: String, status: IdeaStatus)
+    suspend fun updateStatus(id: String, status: IdeaStatus, justification: String? = null)
     suspend fun delete(id: String)
 }

@@ -6,6 +6,8 @@ import br.com.fiap.challengeaguiabranca.domain.auth.AuthException
 import br.com.fiap.challengeaguiabranca.domain.auth.AuthCatalog
 import br.com.fiap.challengeaguiabranca.domain.model.UserRole
 import br.com.fiap.challengeaguiabranca.domain.usecase.auth.AuthenticateUserUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.auth.RegisterAccountUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.auth.ResetPasswordUseCase
 import br.com.fiap.challengeaguiabranca.ui.navigation.Routes
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val authenticateUserUseCase: AuthenticateUserUseCase
+    private val authenticateUserUseCase: AuthenticateUserUseCase,
+    private val registerAccountUseCase: RegisterAccountUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -95,16 +99,34 @@ class LoginViewModel(
             state.registerName.length < 2 -> _uiState.update { it.copy(errorMessage = "Informe seu nome.") }
             !state.registerEmail.contains("@") -> _uiState.update { it.copy(errorMessage = "Informe um e-mail válido.") }
             state.registerPassword.length < 4 -> _uiState.update { it.copy(errorMessage = "Use uma senha com pelo menos 4 caracteres.") }
-            !AuthCatalog.register(state.registerEmail, state.registerPassword, state.registerRole) ->
-                _uiState.update { it.copy(errorMessage = "Já existe uma conta com este e-mail.") }
-            else -> _uiState.update {
-                it.copy(
-                    mode = LoginMode.LOGIN,
-                    email = state.registerEmail,
-                    password = "",
-                    successMessage = "Cadastro criado. Entre com o e-mail e senha que você acabou de criar.",
-                    errorMessage = null
-                )
+            else -> viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                runCatching {
+                    registerAccountUseCase(
+                        name = state.registerName,
+                        email = state.registerEmail,
+                        password = state.registerPassword,
+                        role = state.registerRole
+                    )
+                }.onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            mode = LoginMode.LOGIN,
+                            email = state.registerEmail,
+                            password = "",
+                            successMessage = "Cadastro criado. Entre com o e-mail e senha que você acabou de criar.",
+                            errorMessage = null
+                        )
+                    }
+                }.onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Não foi possível criar a conta."
+                        )
+                    }
+                }
             }
         }
     }
@@ -122,16 +144,29 @@ class LoginViewModel(
         when {
             !state.resetEmail.contains("@") -> _uiState.update { it.copy(errorMessage = "Informe o e-mail cadastrado.") }
             state.resetPassword.length < 4 -> _uiState.update { it.copy(errorMessage = "Use uma senha com pelo menos 4 caracteres.") }
-            !AuthCatalog.resetPassword(state.resetEmail, state.resetPassword) ->
-                _uiState.update { it.copy(errorMessage = "Não encontramos esse e-mail cadastrado.") }
-            else -> _uiState.update {
-                it.copy(
-                    mode = LoginMode.LOGIN,
-                    email = state.resetEmail,
-                    password = "",
-                    successMessage = "Senha alterada para ${state.resetEmail}. Faça login com a nova senha.",
-                    errorMessage = null
-                )
+            else -> viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                runCatching {
+                    resetPasswordUseCase(state.resetEmail, state.resetPassword)
+                }.onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            mode = LoginMode.LOGIN,
+                            email = state.resetEmail,
+                            password = "",
+                            successMessage = "Senha alterada para ${state.resetEmail}. Faça login com a nova senha.",
+                            errorMessage = null
+                        )
+                    }
+                }.onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Não foi possível redefinir a senha."
+                        )
+                    }
+                }
             }
         }
     }
@@ -170,7 +205,8 @@ class LoginViewModel(
     private fun mapAuthError(error: Throwable): String = when (error) {
         is AuthException.UnauthorizedEmail ->
             "E-mail não autorizado. Use a conta do seu perfil (Operador, Gestor ou Liderança)."
-        is AuthException.InvalidPassword -> "Senha incorreta para este e-mail."
+        is AuthException.InvalidPassword,
+        is AuthException.InvalidCredentials -> "E-mail ou senha inválidos."
         is AuthException.UserDataUnavailable ->
             "Não foi possível validar o usuário. Verifique sua conexão e tente novamente."
         else -> error.message ?: "Erro ao entrar. Tente novamente."

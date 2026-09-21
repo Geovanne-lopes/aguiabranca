@@ -1,5 +1,6 @@
 package br.com.fiap.challengeaguiabranca.domain.usecase.guideline
 
+import br.com.fiap.challengeaguiabranca.domain.model.GuidelineHistoryEntry
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.domain.repository.GuidelineRepository
 import br.com.fiap.challengeaguiabranca.domain.util.IdGenerator
@@ -18,6 +19,8 @@ class CreateGuidelineUseCase(
     suspend operator fun invoke(
         title: String,
         content: String,
+        category: String,
+        campaign: String,
         authorId: String
     ): StrategicGuideline {
         val now = System.currentTimeMillis()
@@ -27,7 +30,9 @@ class CreateGuidelineUseCase(
             content = content.trim(),
             authorId = authorId,
             createdAtEpochMillis = now,
-            updatedAtEpochMillis = now
+            updatedAtEpochMillis = now,
+            category = category.trim(),
+            campaign = campaign.trim()
         )
         guidelineRepository.insert(guideline)
         return guideline
@@ -42,6 +47,13 @@ class UpdateGuidelineUseCase(
             guideline.copy(updatedAtEpochMillis = System.currentTimeMillis())
         )
     }
+}
+
+class GetGuidelineHistoryUseCase(
+    private val guidelineRepository: GuidelineRepository
+) {
+    suspend operator fun invoke(guidelineId: String): List<GuidelineHistoryEntry> =
+        guidelineRepository.history(guidelineId)
 }
 
 class DeleteGuidelineUseCase(

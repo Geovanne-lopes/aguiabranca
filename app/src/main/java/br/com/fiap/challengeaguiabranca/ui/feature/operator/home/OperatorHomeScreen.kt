@@ -186,11 +186,13 @@ fun OperatorHomeScreen(
             OperatorOverlay.SUBMIT_IDEA -> OperatorSubmitIdeaScreen(
                 category = submitOverlay.category,
                 form = ideasUiState.form,
+                guidelines = ideasUiState.guidelines,
                 isSubmitting = ideasUiState.isSubmitting,
                 errorMessage = ideasUiState.errorMessage,
                 onTitleChange = ideasViewModel::onTitleChange,
                 onDescriptionChange = ideasViewModel::onDescriptionChange,
                 onCategoryChange = ideasViewModel::onCategoryChange,
+                onGuidelineChange = ideasViewModel::onGuidelineChange,
                 onSubmit = ideasViewModel::submitIdea,
                 onBack = {
                     ideasViewModel.closeForm()

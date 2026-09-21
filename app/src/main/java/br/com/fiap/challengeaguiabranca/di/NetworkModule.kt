@@ -1,20 +1,25 @@
 package br.com.fiap.challengeaguiabranca.di
 
 import br.com.fiap.challengeaguiabranca.BuildConfig
-import br.com.fiap.challengeaguiabranca.data.remote.api.AdviceApiService
-import br.com.fiap.challengeaguiabranca.data.remote.api.FakerApiService
-import org.koin.core.qualifier.named
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import br.com.fiap.challengeaguiabranca.data.remote.ApiCaller
+import br.com.fiap.challengeaguiabranca.data.remote.api.InnovationApi
+import br.com.fiap.challengeaguiabranca.data.remote.auth.AuthInterceptor
+import br.com.fiap.challengeaguiabranca.data.remote.auth.SessionExpiry
+import br.com.fiap.challengeaguiabranca.data.remote.auth.TokenAuthenticator
+import br.com.fiap.challengeaguiabranca.data.local.datastore.TokenStore
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 
-private const val FAKER_BASE_URL = "https://fakerapi.it/"
-private const val ADVICE_BASE_URL = "https://api.adviceslip.com/"
+const val PUBLIC_API = "publicInnovationApi"
+const val SECURED_API = "securedInnovationApi"
 
 val networkModule = module {
 
@@ -23,51 +28,70 @@ val networkModule = module {
             ignoreUnknownKeys = true
             coerceInputValues = true
             isLenient = true
+            explicitNulls = false
         }
     }
 
-    single {
-        val logging = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
-        }
+    single { TokenStore(androidContext()) }
+
+    single { SessionExpiry(get(), get()) }
+
+    single { ApiCaller(get()) }
+
+    single(named("publicHttp")) {
         OkHttpClient.Builder()
-            .addInterceptor(logging)
+            .addInterceptor(httpLogging())
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 
-    single(named("fakerRetrofit")) {
-        val json = get<Json>()
-        val client = get<OkHttpClient>()
-        Retrofit.Builder()
-            .baseUrl(FAKER_BASE_URL)
-            .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-
-    single(named("adviceRetrofit")) {
-        val json = get<Json>()
-        val client = get<OkHttpClient>()
-        Retrofit.Builder()
-            .baseUrl(ADVICE_BASE_URL)
-            .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
+    single(named(PUBLIC_API)) {
+        retrofit(get<Json>(), get(named("publicHttp")), apiBaseUrl()).create(InnovationApi::class.java)
     }
 
     single {
-        get<Retrofit>(named("fakerRetrofit"))
-            .create(FakerApiService::class.java)
+        TokenAuthenticator(
+            tokenStore = get(),
+            publicApi = get(named(PUBLIC_API)),
+            sessionExpiry = get()
+        )
     }
 
-    single {
-        get<Retrofit>(named("adviceRetrofit"))
-            .create(AdviceApiService::class.java)
+    single(named("securedHttp")) {
+        OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(get<TokenStore>()))
+            .authenticator(get<TokenAuthenticator>())
+            .addInterceptor(httpLogging())
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
+
+    single(named(SECURED_API)) {
+        retrofit(get<Json>(), get(named("securedHttp")), apiBaseUrl()).create(InnovationApi::class.java)
+    }
+}
+
+private fun apiBaseUrl(): String {
+    val configured = BuildConfig.API_BASE_URL
+    return if (configured.endsWith("/")) configured else "$configured/"
+}
+
+private fun httpLogging(): HttpLoggingInterceptor {
+    return HttpLoggingInterceptor().apply {
+        level = if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor.Level.BASIC
+        } else {
+            HttpLoggingInterceptor.Level.NONE
+        }
+    }
+}
+
+private fun retrofit(json: Json, client: OkHttpClient, baseUrl: String): Retrofit {
+    return Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .client(client)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
 }

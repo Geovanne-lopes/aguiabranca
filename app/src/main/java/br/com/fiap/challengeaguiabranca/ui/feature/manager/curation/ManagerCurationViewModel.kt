@@ -29,10 +29,10 @@ class ManagerCurationViewModel(
         }
     }
 
-    fun updateStatus(idea: Idea, status: IdeaStatus) {
+    fun updateStatus(idea: Idea, status: IdeaStatus, justification: String? = null) {
         viewModelScope.launch {
             _uiState.update { it.copy(actionMessage = null) }
-            runCatching { updateIdeaStatusUseCase(idea.id, status) }
+            runCatching { updateIdeaStatusUseCase(idea.id, status, justification) }
                 .onSuccess {
                     _uiState.update {
                         it.copy(actionMessage = "Status atualizado: ${status.name}")

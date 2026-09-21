@@ -12,9 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import br.com.fiap.challengeaguiabranca.domain.model.UserRole
-import br.com.fiap.challengeaguiabranca.domain.usecase.session.GetCurrentUserUseCase
-import br.com.fiap.challengeaguiabranca.domain.usecase.session.IsLoggedInUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.auth.RestoreSessionUseCase
 import br.com.fiap.challengeaguiabranca.ui.navigation.InnovationNavGraph
 import br.com.fiap.challengeaguiabranca.ui.navigation.Routes
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
@@ -25,17 +23,18 @@ fun InnovationApp(
     modifier: Modifier = Modifier,
     darkTheme: Boolean = false,
     onToggleTheme: () -> Unit = {},
-    isLoggedInUseCase: IsLoggedInUseCase = koinInject(),
-    getCurrentUserUseCase: GetCurrentUserUseCase = koinInject()
+    restoreSessionUseCase: RestoreSessionUseCase = koinInject()
 ) {
     val navController = rememberNavController()
     var startDestination by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        startDestination = resolveStartDestination(
-            isLoggedIn = isLoggedInUseCase(),
-            role = getCurrentUserUseCase()?.role
-        )
+        val user = restoreSessionUseCase()
+        startDestination = if (user == null) {
+            Routes.LOGIN
+        } else {
+            Routes.homeForRole(user.role)
+        }
     }
 
     when (val destination = startDestination) {
@@ -56,9 +55,4 @@ fun InnovationApp(
             )
         }
     }
-}
-
-private fun resolveStartDestination(isLoggedIn: Boolean, role: UserRole?): String {
-    if (!isLoggedIn || role == null) return Routes.LOGIN
-    return Routes.homeForRole(role)
 }

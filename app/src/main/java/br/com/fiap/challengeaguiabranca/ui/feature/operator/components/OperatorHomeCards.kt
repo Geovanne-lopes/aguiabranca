@@ -281,6 +281,8 @@ fun GuidelineDetailCard(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
+            GuidelineCategoryCampaign(guideline.category, guideline.campaign)
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = guideline.content,
                 style = MaterialTheme.typography.bodyMedium,
@@ -315,6 +317,8 @@ fun GuidelineReadOnlyCard(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
+            GuidelineCategoryCampaign(guideline.category, guideline.campaign)
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = guideline.content,
                 style = MaterialTheme.typography.bodySmall,
@@ -324,6 +328,19 @@ fun GuidelineReadOnlyCard(
             )
         }
     }
+}
+
+@Composable
+private fun GuidelineCategoryCampaign(category: String?, campaign: String?) {
+    Text(
+        text = stringResource(
+            R.string.guideline_meta,
+            category?.takeIf { it.isNotBlank() } ?: "—",
+            campaign?.takeIf { it.isNotBlank() } ?: "—"
+        ),
+        style = MaterialTheme.typography.labelSmall,
+        color = InnovatePrimary
+    )
 }
 
 @Composable

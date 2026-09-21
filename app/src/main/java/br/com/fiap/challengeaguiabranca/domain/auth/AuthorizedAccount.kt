@@ -3,8 +3,8 @@ package br.com.fiap.challengeaguiabranca.domain.auth
 import br.com.fiap.challengeaguiabranca.domain.model.UserRole
 
 /**
- * Contas fixas do desafio: cada e-mail pertence a um único [UserRole].
- * A senha é validada localmente; nome/avatar vêm da FakerAPI após autenticação.
+ * Contas demo só para preencher e-mail e senha nos botões da tela de login.
+ * A senha não é validada aqui: o login, o cadastro e o reset vão para a API.
  */
 data class AuthorizedAccount(
     val email: String,

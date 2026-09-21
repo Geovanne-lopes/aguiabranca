@@ -1,0 +1,14 @@
+app:
+  jwt:
+    secret: ${JWT_SECRET:local-dev-only-jwt-secret-min-32-bytes}
+  seed:
+    enabled: true
+  cors:
+    allowed-origins: http://localhost:8080,http://10.0.2.2:8080
+  openapi:
+    public: true
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    br.com.fiap.aguiabranca: INFO

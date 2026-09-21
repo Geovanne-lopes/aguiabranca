@@ -10,5 +10,8 @@ data class Idea(
     val category: IdeaCategory,
     val authorId: String,
     val status: IdeaStatus = IdeaStatus.PENDING,
-    val createdAtEpochMillis: Long = System.currentTimeMillis()
+    val createdAtEpochMillis: Long = System.currentTimeMillis(),
+    val guidelineId: String? = null,
+    val guidelineTitle: String? = null,
+    val authorName: String? = null
 )

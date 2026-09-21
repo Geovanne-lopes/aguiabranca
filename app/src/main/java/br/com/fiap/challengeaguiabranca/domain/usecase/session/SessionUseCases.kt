@@ -1,6 +1,7 @@
 package br.com.fiap.challengeaguiabranca.domain.usecase.session
 
 import br.com.fiap.challengeaguiabranca.domain.model.User
+import br.com.fiap.challengeaguiabranca.domain.repository.AuthRepository
 import br.com.fiap.challengeaguiabranca.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -25,9 +26,11 @@ class ObserveCurrentUserUseCase(
 }
 
 class ClearSessionUseCase(
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke() {
+        authRepository.logout()
         sessionRepository.clearSession()
     }
 }

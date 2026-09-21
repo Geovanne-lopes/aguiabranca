@@ -6,6 +6,8 @@ import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
 import br.com.fiap.challengeaguiabranca.domain.model.Project
 import br.com.fiap.challengeaguiabranca.domain.model.ProjectStatus
+import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
+import br.com.fiap.challengeaguiabranca.domain.usecase.guideline.ObserveGuidelinesUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.idea.ObserveAllIdeasUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.project.CreateProjectFromIdeaUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.project.DeleteProjectUseCase
@@ -26,7 +28,8 @@ class ManagerProjectsViewModel(
     observeAllIdeasUseCase: ObserveAllIdeasUseCase,
     private val createProjectFromIdeaUseCase: CreateProjectFromIdeaUseCase,
     private val updateProjectUseCase: UpdateProjectUseCase,
-    private val deleteProjectUseCase: DeleteProjectUseCase
+    private val deleteProjectUseCase: DeleteProjectUseCase,
+    observeGuidelinesUseCase: ObserveGuidelinesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ManagerProjectsUiState())
@@ -35,6 +38,7 @@ class ManagerProjectsViewModel(
     private var managerId: String? = null
     private var ideasCache: List<Idea> = emptyList()
     private var projectsCache: List<Project> = emptyList()
+    private var guidelinesCache: List<StrategicGuideline> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -63,6 +67,12 @@ class ManagerProjectsViewModel(
                         isLoading = false
                     )
                 }
+            }
+        }
+        viewModelScope.launch {
+            observeGuidelinesUseCase().collect { guidelines ->
+                guidelinesCache = guidelines
+                _uiState.update { it.copy(guidelines = guidelines) }
             }
         }
     }
@@ -131,7 +141,8 @@ class ManagerProjectsViewModel(
                     investmentText = project.investmentAmount.toString(),
                     profitText = project.obtainedProfit.toString(),
                     productivityText = project.productivityGainPercent.toString(),
-                    deadlineDaysText = daysText
+                    deadlineDaysText = daysText,
+                    guidelineId = project.guidelineId
                 ),
                 message = null
             )
@@ -164,6 +175,10 @@ class ManagerProjectsViewModel(
         _uiState.update { it.copy(editForm = it.editForm.copy(deadlineDaysText = value)) }
     }
 
+    fun onEditGuidelineChange(guidelineId: String) {
+        _uiState.update { it.copy(editForm = it.editForm.copy(guidelineId = guidelineId)) }
+    }
+
     fun saveEdit() {
         val form = _uiState.value.editForm
         val project = projectsCache.find { it.id == form.projectId }
@@ -181,6 +196,10 @@ class ManagerProjectsViewModel(
                 showMessage("Informe um lucro obtido válido.")
             productivity == null || productivity < 0 || productivity > 100 ->
                 showMessage("Produtividade deve ser entre 0 e 100.")
+            guidelinesCache.isEmpty() ->
+                showMessage("A liderança ainda não publicou uma estratégia.")
+            form.guidelineId.isNullOrBlank() ->
+                showMessage("Selecione a estratégia vigente.")
             else -> viewModelScope.launch {
                 _uiState.update { it.copy(isSaving = true) }
                 val deadline = parseDeadlineDays(form.deadlineDaysText)
@@ -189,7 +208,8 @@ class ManagerProjectsViewModel(
                     investmentAmount = investment,
                     obtainedProfit = profit,
                     productivityGainPercent = productivity,
-                    deadlineEpochMillis = deadline
+                    deadlineEpochMillis = deadline,
+                    guidelineId = form.guidelineId
                 )
                 runCatching { updateProjectUseCase(updated) }
                     .onSuccess {

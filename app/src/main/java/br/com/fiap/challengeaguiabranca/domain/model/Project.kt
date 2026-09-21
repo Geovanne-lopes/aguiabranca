@@ -17,10 +17,13 @@ data class Project(
     val deadlineEpochMillis: Long? = null,
     val managerId: String,
     val createdAtEpochMillis: Long = System.currentTimeMillis(),
-    val updatedAtEpochMillis: Long = System.currentTimeMillis()
+    val updatedAtEpochMillis: Long = System.currentTimeMillis(),
+    val guidelineId: String? = null,
+    val guidelineTitle: String? = null,
+    val reportedRoiPercent: Double? = null
 ) {
     val roiPercent: Double
-        get() = if (investmentAmount > 0.0) {
+        get() = reportedRoiPercent ?: if (investmentAmount > 0.0) {
             ((obtainedProfit - investmentAmount) / investmentAmount) * 100.0
         } else {
             0.0

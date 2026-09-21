@@ -23,16 +23,22 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -44,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorActivity
+import br.com.fiap.challengeaguiabranca.domain.model.StrategyReturn
 import br.com.fiap.challengeaguiabranca.ui.components.SimpleBarChart
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.components.KpiStatCard
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
@@ -68,6 +75,14 @@ fun LeaderDashboardScreen(
     viewModel: LeaderDashboardViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.aiInsightError) {
+        uiState.aiInsightError?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.clearAiInsightError()
+        }
+    }
 
     if (uiState.isLoading) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -76,8 +91,9 @@ fun LeaderDashboardScreen(
         return
     }
 
+    Box(modifier) {
     LazyColumn(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -163,6 +179,28 @@ fun LeaderDashboardScreen(
         }
 
         item {
+            Button(
+                onClick = viewModel::generateAiInsight,
+                enabled = !uiState.aiInsightLoading,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = InnovatePrimary)
+            ) {
+                Text(
+                    if (uiState.aiInsightLoading) "Gerando insight de IA..." else "Gerar insight de IA",
+                    color = InnovateOnPrimary
+                )
+            }
+            uiState.aiInsightText?.takeIf { it.isNotBlank() }?.let { text ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text, style = MaterialTheme.typography.bodyMedium, color = InnovateTextPrimary)
+                uiState.aiInsightDisclaimer?.takeIf { it.isNotBlank() }?.let { disclaimer ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(disclaimer, style = MaterialTheme.typography.bodySmall, color = InnovateTextSecondary)
+                }
+            }
+        }
+
+        item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -243,6 +281,29 @@ fun LeaderDashboardScreen(
         }
 
         item {
+            Text(
+                stringResource(R.string.leader_strategy_returns_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (uiState.strategyReturns.isEmpty()) {
+            item {
+                Text(
+                    stringResource(R.string.leader_strategy_returns_empty),
+                    color = InnovateTextSecondary
+                )
+            }
+        } else {
+            itemsIndexed(
+                uiState.strategyReturns,
+                key = { index, item -> item.guidelineId ?: "none-$index" }
+            ) { _, item ->
+                StrategyReturnRow(item)
+            }
+        }
+
+        item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -274,6 +335,11 @@ fun LeaderDashboardScreen(
         }
 
         item { Spacer(modifier = Modifier.height(80.dp)) }
+    }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -357,6 +423,49 @@ private fun TopOperatorRow(rank: Int, operator: OperatorActivity) {
                     color = InnovateTextSecondary
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun StrategyReturnRow(item: StrategyReturn) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(item.guidelineTitle, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                stringResource(
+                    R.string.leader_strategy_returns_counts,
+                    item.ideasCount,
+                    item.projectsCount,
+                    item.completedProjectsCount
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = InnovateTextSecondary
+            )
+            Text(
+                stringResource(
+                    R.string.leader_strategy_returns_money,
+                    formatCurrency(item.totalInvestment),
+                    formatCurrency(item.totalObtainedProfit)
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = InnovateTextSecondary
+            )
+            Text(
+                stringResource(
+                    R.string.leader_strategy_returns_rates,
+                    "%.0f".format(item.overallRoiPercent),
+                    "%.0f".format(item.averageProductivityGainPercent)
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = InnovatePrimary
+            )
         }
     }
 }

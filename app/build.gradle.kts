@@ -20,6 +20,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl()}\"")
+        buildConfigField("boolean", "USE_REMOTE_API", "true")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -85,10 +88,16 @@ dependencies {
     // Tests
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+private fun apiBaseUrl(): String {
+    val raw = (project.findProperty("API_BASE_URL") as String?) ?: "http://10.0.2.2:8080/"
+    return if (raw.endsWith("/")) raw else "$raw/"
 }

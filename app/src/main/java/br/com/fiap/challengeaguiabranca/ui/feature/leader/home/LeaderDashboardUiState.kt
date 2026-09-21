@@ -1,6 +1,7 @@
 package br.com.fiap.challengeaguiabranca.ui.feature.leader.home
 
 import br.com.fiap.challengeaguiabranca.domain.model.RoiDashboardSummary
+import br.com.fiap.challengeaguiabranca.domain.model.StrategyReturn
 
 data class LeaderDashboardUiState(
     val userFirstName: String = "",
@@ -14,5 +15,10 @@ data class LeaderDashboardUiState(
     ),
     val statusChartLabels: List<String> = emptyList(),
     val statusChartValues: List<Int> = emptyList(),
-    val isLoading: Boolean = true
+    val strategyReturns: List<StrategyReturn> = emptyList(),
+    val isLoading: Boolean = true,
+    val aiInsightText: String? = null,
+    val aiInsightDisclaimer: String? = null,
+    val aiInsightLoading: Boolean = false,
+    val aiInsightError: String? = null
 )

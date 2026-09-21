@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.IdeaCategory
+import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.IdeaFormState
 import br.com.fiap.challengeaguiabranca.ui.feature.operator.ideas.OperatorIdeaFormCard
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateBackground
@@ -31,11 +32,13 @@ import br.com.fiap.challengeaguiabranca.ui.theme.InnovateTextPrimary
 fun OperatorSubmitIdeaScreen(
     category: IdeaCategory,
     form: IdeaFormState,
+    guidelines: List<StrategicGuideline>,
     isSubmitting: Boolean,
     errorMessage: String?,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onCategoryChange: (IdeaCategory) -> Unit,
+    onGuidelineChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -81,9 +84,12 @@ fun OperatorSubmitIdeaScreen(
                     isSubmitting = isSubmitting,
                     errorMessage = errorMessage,
                     formTitleRes = titleRes,
+                    guidelines = guidelines,
+                    linkGuideline = true,
                     onTitleChange = onTitleChange,
                     onDescriptionChange = onDescriptionChange,
                     onCategoryChange = onCategoryChange,
+                    onGuidelineChange = onGuidelineChange,
                     onSubmit = onSubmit,
                     onCancel = onBack
                 )

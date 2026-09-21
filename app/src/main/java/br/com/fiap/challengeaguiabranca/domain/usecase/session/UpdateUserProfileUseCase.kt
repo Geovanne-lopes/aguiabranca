@@ -1,9 +1,11 @@
 package br.com.fiap.challengeaguiabranca.domain.usecase.session
 
 import br.com.fiap.challengeaguiabranca.domain.repository.SessionRepository
+import br.com.fiap.challengeaguiabranca.domain.repository.UserRepository
 
 class UpdateUserProfileUseCase(
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(
         name: String,
@@ -23,13 +25,13 @@ class UpdateUserProfileUseCase(
                 return Result.failure(IllegalArgumentException("Informe um e-mail válido."))
         }
 
-        sessionRepository.saveSession(
-            current.copy(
+        return runCatching {
+            val updated = userRepository.updateProfile(
                 name = trimmedName,
                 email = trimmedEmail,
                 avatarUrl = avatarUrl
             )
-        )
-        return Result.success(Unit)
+            sessionRepository.saveSession(updated)
+        }
     }
 }

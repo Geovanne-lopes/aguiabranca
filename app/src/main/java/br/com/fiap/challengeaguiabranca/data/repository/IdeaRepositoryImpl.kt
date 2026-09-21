@@ -35,7 +35,7 @@ class IdeaRepositoryImpl(
         ideaDao.update(IdeaEntityMapper.toEntity(idea))
     }
 
-    override suspend fun updateStatus(id: String, status: IdeaStatus) {
+    override suspend fun updateStatus(id: String, status: IdeaStatus, justification: String?) {
         ideaDao.updateStatus(id, status)
     }
 

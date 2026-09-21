@@ -1,0 +1,11 @@
+target/
+.env
+application-prod.yml
+*.jar
+*.war
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/

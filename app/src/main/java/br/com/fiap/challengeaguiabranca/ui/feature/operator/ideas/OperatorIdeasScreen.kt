@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +81,10 @@ fun OperatorIdeasScreen(
                     onTitleChange = viewModel::onTitleChange,
                     onDescriptionChange = viewModel::onDescriptionChange,
                     onCategoryChange = viewModel::onCategoryChange,
-                    onSubmit = viewModel::submitIdea
+                    onGuidelineChange = viewModel::onGuidelineChange,
+                    onSubmit = viewModel::submitIdea,
+                    onEdit = viewModel::openEdit,
+                    onDelete = viewModel::requestDelete
                 )
             }
         }
@@ -100,6 +105,24 @@ fun OperatorIdeasScreen(
             }
         }
 
+        uiState.pendingDeleteId?.let {
+            AlertDialog(
+                onDismissRequest = viewModel::dismissDelete,
+                title = { Text(stringResource(R.string.operator_ideas_delete_title)) },
+                text = { Text(stringResource(R.string.operator_ideas_delete_body)) },
+                confirmButton = {
+                    TextButton(onClick = viewModel::confirmDelete) {
+                        Text(stringResource(R.string.operator_ideas_delete))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissDelete) {
+                        Text(stringResource(R.string.operator_ideas_cancel))
+                    }
+                }
+            )
+        }
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -115,7 +138,10 @@ private fun OperatorIdeasContent(
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onCategoryChange: (IdeaCategory) -> Unit,
-    onSubmit: () -> Unit
+    onGuidelineChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    onEdit: (Idea) -> Unit,
+    onDelete: (Idea) -> Unit
 ) {
     val sortedIdeas = uiState.ideas.sortedWith(
         compareByDescending<Idea> { idea ->
@@ -141,9 +167,12 @@ private fun OperatorIdeasContent(
                     form = uiState.form,
                     isSubmitting = uiState.isSubmitting,
                     errorMessage = uiState.errorMessage,
+                    guidelines = uiState.guidelines,
+                    linkGuideline = true,
                     onTitleChange = onTitleChange,
                     onDescriptionChange = onDescriptionChange,
                     onCategoryChange = onCategoryChange,
+                    onGuidelineChange = onGuidelineChange,
                     onSubmit = onSubmit,
                     onCancel = onCloseForm
                 )
@@ -194,7 +223,19 @@ private fun OperatorIdeasContent(
             }
         } else {
             items(sortedIdeas, key = { it.id }) { idea ->
-                OperatorIdeaListCard(idea = idea)
+                OperatorIdeaListCard(
+                    idea = idea,
+                    onEdit = if (idea.status == IdeaStatus.PENDING) {
+                        { onEdit(idea) }
+                    } else {
+                        null
+                    },
+                    onDelete = if (idea.status == IdeaStatus.PENDING) {
+                        { onDelete(idea) }
+                    } else {
+                        null
+                    }
+                )
             }
         }
     }

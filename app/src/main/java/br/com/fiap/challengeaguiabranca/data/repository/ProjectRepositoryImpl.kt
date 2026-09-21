@@ -28,6 +28,11 @@ class ProjectRepositoryImpl(
         projectDao.insert(ProjectEntityMapper.toEntity(project))
     }
 
+    override suspend fun createFromIdea(ideaId: String): Project {
+        return getByIdeaId(ideaId)
+            ?: throw IllegalStateException("No modo local, crie o projeto com insert.")
+    }
+
     override suspend fun update(project: Project) {
         projectDao.update(ProjectEntityMapper.toEntity(project))
     }

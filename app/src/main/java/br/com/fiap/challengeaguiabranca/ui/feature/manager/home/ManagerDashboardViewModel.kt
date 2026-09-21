@@ -2,23 +2,20 @@ package br.com.fiap.challengeaguiabranca.ui.feature.manager.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
-import br.com.fiap.challengeaguiabranca.domain.usecase.idea.ObserveAllIdeasUseCase
-import br.com.fiap.challengeaguiabranca.domain.usecase.project.ObserveAllProjectsUseCase
+import br.com.fiap.challengeaguiabranca.domain.usecase.dashboard.ObserveManagerDashboardUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.session.ObserveCurrentUserUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManagerDashboardViewModel(
     observeCurrentUserUseCase: ObserveCurrentUserUseCase,
-    observeAllIdeasUseCase: ObserveAllIdeasUseCase,
-    observeAllProjectsUseCase: ObserveAllProjectsUseCase
+    observeManagerDashboardUseCase: ObserveManagerDashboardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ManagerDashboardUiState())
@@ -31,29 +28,16 @@ class ManagerDashboardViewModel(
                     if (user == null) {
                         flowOf(ManagerDashboardUiState(isLoading = false))
                     } else {
-                        combine(
-                            observeAllIdeasUseCase(),
-                            observeAllProjectsUseCase()
-                        ) { ideas, projects ->
-                            val ideasThisMonth = ManagerDashboardStats.ideasThisMonth(ideas)
-                            val ideasPrevMonth = ManagerDashboardStats.ideasPreviousMonth(ideas)
-                            val rate = ManagerDashboardStats.approvalRatePercent(ideas)
+                        observeManagerDashboardUseCase().map { dashboard ->
                             ManagerDashboardUiState(
                                 userFirstName = user.name.substringBefore(" ").ifBlank { user.name },
-                                pendingIdeasCount = ideas.count { it.status == IdeaStatus.PENDING },
-                                activeProjectsCount = ManagerDashboardStats.activeProjectsCount(projects),
-                                ideasReceivedCount = ideasThisMonth,
-                                approvalRatePercent = rate,
-                                ideasReceivedTrend = ManagerDashboardStats.monthComparisonTrend(
-                                    ideasThisMonth,
-                                    ideasPrevMonth
-                                ),
-                                approvalRateTrend = if (ideas.isEmpty()) {
-                                    "Sem ideias para calcular"
-                                } else {
-                                    "$rate% no total"
-                                },
-                                monthlyBars = ManagerDashboardStats.buildMonthlyBars(ideas),
+                                pendingIdeasCount = dashboard.pendingIdeasCount,
+                                activeProjectsCount = dashboard.activeProjectsCount,
+                                ideasReceivedCount = dashboard.ideasReceivedThisMonth,
+                                approvalRatePercent = dashboard.approvalRatePercent,
+                                ideasReceivedTrend = dashboard.ideasReceivedTrendLabel,
+                                approvalRateTrend = dashboard.approvalRateTrendLabel,
+                                monthlyBars = dashboard.monthlyBars.map { MonthBarData(it.label, it.count) },
                                 isLoading = false
                             )
                         }

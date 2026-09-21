@@ -57,6 +57,7 @@ import br.com.fiap.challengeaguiabranca.R
 import br.com.fiap.challengeaguiabranca.domain.model.Idea
 import br.com.fiap.challengeaguiabranca.domain.model.Project
 import br.com.fiap.challengeaguiabranca.domain.model.ProjectStatus
+import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
@@ -90,12 +91,14 @@ fun ManagerProjectsScreen(
             uiState.editForm.isVisible -> {
                 ProjectEditOverlay(
                     form = uiState.editForm,
+                    guidelines = uiState.guidelines,
                     isSaving = uiState.isSaving,
                     onStatusChange = viewModel::onEditStatusChange,
                     onInvestmentChange = viewModel::onEditInvestmentChange,
                     onProfitChange = viewModel::onEditProfitChange,
                     onProductivityChange = viewModel::onEditProductivityChange,
                     onDeadlineDaysChange = viewModel::onEditDeadlineDaysChange,
+                    onGuidelineChange = viewModel::onEditGuidelineChange,
                     onSave = viewModel::saveEdit,
                     onCancel = viewModel::closeEdit
                 )
@@ -223,6 +226,15 @@ private fun ProjectCard(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
+                    stringResource(
+                        R.string.manager_project_strategy,
+                        project.guidelineTitle?.takeIf { it.isNotBlank() }
+                            ?: stringResource(R.string.project_strategy_none)
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = InnovatePrimary
+                )
+                Text(
                     "ROI ${"%.0f".format(project.roiPercent)}%",
                     style = MaterialTheme.typography.labelMedium
                 )
@@ -311,16 +323,20 @@ private fun CreateProjectDialog(
 @Composable
 private fun ProjectEditOverlay(
     form: ProjectEditForm,
+    guidelines: List<StrategicGuideline>,
     isSaving: Boolean,
     onStatusChange: (ProjectStatus) -> Unit,
     onInvestmentChange: (String) -> Unit,
     onProfitChange: (String) -> Unit,
     onProductivityChange: (String) -> Unit,
     onDeadlineDaysChange: (String) -> Unit,
+    onGuidelineChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
     var statusExpanded by remember { mutableStateOf(false) }
+    var guidelineExpanded by remember { mutableStateOf(false) }
+    val selectedGuideline = guidelines.find { it.id == form.guidelineId }
 
     Column(
         modifier = Modifier
@@ -362,6 +378,38 @@ private fun ProjectEditOverlay(
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+        if (guidelines.isEmpty()) {
+            Text(
+                stringResource(R.string.operator_ideas_no_guideline),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        } else {
+            ExposedDropdownMenuBox(expanded = guidelineExpanded, onExpandedChange = { guidelineExpanded = it }) {
+                OutlinedTextField(
+                    value = selectedGuideline?.title.orEmpty(),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.manager_project_field_guideline)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(guidelineExpanded) }
+                )
+                ExposedDropdownMenu(expanded = guidelineExpanded, onDismissRequest = { guidelineExpanded = false }) {
+                    guidelines.forEach { guideline ->
+                        DropdownMenuItem(
+                            text = { Text(guideline.title) },
+                            onClick = {
+                                onGuidelineChange(guideline.id)
+                                guidelineExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
             value = form.investmentText,

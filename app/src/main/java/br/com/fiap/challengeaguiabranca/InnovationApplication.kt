@@ -38,7 +38,7 @@ class InnovationApplication : Application() {
             androidContext(this@InnovationApplication)
             modules(appModules)
         }
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && !BuildConfig.USE_REMOTE_API) {
             RemoteBootstrapVerifier.verify(userRepository, insightRepository)
             LocalBootstrapVerifier.verify(
                 databaseSeeder = databaseSeeder,

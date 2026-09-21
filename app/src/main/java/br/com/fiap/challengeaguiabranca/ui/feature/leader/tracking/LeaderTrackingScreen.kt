@@ -87,6 +87,15 @@ private fun TrackingProjectCard(project: Project) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(project.title, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(
+                    R.string.manager_project_strategy,
+                    project.guidelineTitle?.takeIf { it.isNotBlank() }
+                        ?: stringResource(R.string.project_strategy_none)
+                ),
+                style = MaterialTheme.typography.labelMedium,
+                color = InnovatePrimary
+            )
             Text(project.status.label, style = MaterialTheme.typography.labelMedium, color = InnovatePrimary)
             Spacer(modifier = Modifier.height(8.dp))
             Text(

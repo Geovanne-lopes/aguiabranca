@@ -2,6 +2,7 @@ package br.com.fiap.challengeaguiabranca.data.repository
 
 import br.com.fiap.challengeaguiabranca.data.local.dao.StrategicGuidelineDao
 import br.com.fiap.challengeaguiabranca.data.local.mapper.GuidelineEntityMapper
+import br.com.fiap.challengeaguiabranca.domain.model.GuidelineHistoryEntry
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
 import br.com.fiap.challengeaguiabranca.domain.repository.GuidelineRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +30,6 @@ class GuidelineRepositoryImpl(
         val entity = guidelineDao.getById(id) ?: return
         guidelineDao.delete(entity)
     }
+
+    override suspend fun history(guidelineId: String): List<GuidelineHistoryEntry> = emptyList()
 }

@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -73,11 +74,11 @@ fun ManagerCurationScreen(
         }
     }
 
-    fun animateAndAct(idea: Idea, newStatus: IdeaStatus) {
+    fun animateAndAct(idea: Idea, newStatus: IdeaStatus, justification: String? = null) {
         scope.launch {
             animatingId = idea.id
             delay(620)
-            viewModel.updateStatus(idea, newStatus)
+            viewModel.updateStatus(idea, newStatus, justification)
             animatingId = null
         }
     }
@@ -128,7 +129,9 @@ fun ManagerCurationScreen(
                             CurationIdeaCard(
                                 idea = idea,
                                 onApprove = { animateAndAct(idea, IdeaStatus.APPROVED) },
-                                onReject = { animateAndAct(idea, IdeaStatus.REJECTED) },
+                                onReject = { justification ->
+                                    animateAndAct(idea, IdeaStatus.REJECTED, justification)
+                                },
                                 onPrioritize = { animateAndAct(idea, IdeaStatus.PRIORITIZED) }
                             )
                         }
@@ -145,9 +148,13 @@ fun ManagerCurationScreen(
 private fun CurationIdeaCard(
     idea: Idea,
     onApprove: () -> Unit,
-    onReject: () -> Unit,
+    onReject: (String) -> Unit,
     onPrioritize: () -> Unit
 ) {
+    var showRejectField by remember { mutableStateOf(false) }
+    var justification by remember { mutableStateOf("") }
+    val authorLabel = idea.authorName?.takeIf { it.isNotBlank() }
+        ?: MockOperatorsCatalog.resolveName(idea.authorId)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -157,7 +164,7 @@ private fun CurationIdeaCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(idea.title, fontWeight = FontWeight.Bold)
             Text(
-                stringResource(R.string.manager_idea_author, MockOperatorsCatalog.resolveName(idea.authorId)),
+                stringResource(R.string.manager_idea_author, authorLabel),
                 style = MaterialTheme.typography.labelMedium,
                 color = InnovatePrimary
             )
@@ -174,11 +181,34 @@ private fun CurationIdeaCard(
                     ) {
                         Text(stringResource(R.string.manager_action_approve), color = InnovateOnPrimary)
                     }
-                    OutlinedButton(onClick = onReject, modifier = Modifier.weight(1f)) {
+                    OutlinedButton(
+                        onClick = { showRejectField = !showRejectField },
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(stringResource(R.string.manager_action_reject))
                     }
                     OutlinedButton(onClick = onPrioritize, modifier = Modifier.weight(1f)) {
                         Text(stringResource(R.string.manager_action_prioritize))
+                    }
+                }
+                if (showRejectField) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = justification,
+                        onValueChange = { justification = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Justificativa") },
+                        supportingText = { Text("Mínimo de 10 caracteres") },
+                        minLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { onReject(justification.trim()) },
+                        enabled = justification.trim().length >= 10,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = InnovatePrimary)
+                    ) {
+                        Text("Confirmar reprovação", color = InnovateOnPrimary)
                     }
                 }
             }

@@ -44,7 +44,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.fiap.challengeaguiabranca.R
+import br.com.fiap.challengeaguiabranca.domain.model.GuidelineHistoryEntry
 import br.com.fiap.challengeaguiabranca.domain.model.StrategicGuideline
+import br.com.fiap.challengeaguiabranca.ui.util.formatDate
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateSurface
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovateOnPrimary
 import br.com.fiap.challengeaguiabranca.ui.theme.InnovatePrimary
@@ -80,15 +82,24 @@ fun LeaderGuidelinesScreen(
                     isSaving = uiState.isSaving,
                     onTitleChange = viewModel::onTitleChange,
                     onContentChange = viewModel::onContentChange,
+                    onCategoryChange = viewModel::onCategoryChange,
+                    onCampaignChange = viewModel::onCampaignChange,
                     onSave = viewModel::saveForm,
                     onCancel = viewModel::closeForm
+                )
+            }
+            uiState.history.isVisible -> {
+                GuidelineHistoryOverlay(
+                    history = uiState.history,
+                    onClose = viewModel::closeHistory
                 )
             }
             else -> {
                 GuidelinesList(
                     guidelines = uiState.guidelines,
                     onEdit = viewModel::openEditForm,
-                    onDelete = viewModel::deleteGuideline
+                    onDelete = viewModel::deleteGuideline,
+                    onHistory = viewModel::openHistory
                 )
                 FloatingActionButton(
                     onClick = viewModel::openCreateForm,
@@ -109,7 +120,8 @@ fun LeaderGuidelinesScreen(
 private fun GuidelinesList(
     guidelines: List<StrategicGuideline>,
     onEdit: (StrategicGuideline) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onHistory: (StrategicGuideline) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -135,6 +147,7 @@ private fun GuidelinesList(
                     guideline = guideline,
                     onEdit = { onEdit(guideline) },
                     onDelete = { onDelete(guideline.id) },
+                    onHistory = { onHistory(guideline) },
                     modifier = Modifier.premiumListEntrance(index)
                 )
             }
@@ -148,6 +161,7 @@ private fun GuidelineManageCard(
     guideline: StrategicGuideline,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -171,6 +185,11 @@ private fun GuidelineManageCard(
                 }
             }
             Text(guideline.content, style = MaterialTheme.typography.bodySmall, color = InnovateTextSecondary)
+            GuidelineMetaLine(guideline)
+            Spacer(modifier = Modifier.height(8.dp))
+            TextButton(onClick = onHistory) {
+                Text(stringResource(R.string.leader_guideline_history))
+            }
         }
     }
 }
@@ -181,6 +200,8 @@ private fun GuidelineFormOverlay(
     isSaving: Boolean,
     onTitleChange: (String) -> Unit,
     onContentChange: (String) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onCampaignChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -216,6 +237,22 @@ private fun GuidelineFormOverlay(
             modifier = Modifier.fillMaxWidth(),
             minLines = 5
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = form.category,
+            onValueChange = onCategoryChange,
+            label = { Text(stringResource(R.string.leader_guideline_field_category)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = form.campaign,
+            onValueChange = onCampaignChange,
+            label = { Text(stringResource(R.string.leader_guideline_field_campaign)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
@@ -232,4 +269,90 @@ private fun GuidelineFormOverlay(
         }
         Spacer(modifier = Modifier.height(80.dp))
     }
+}
+
+@Composable
+private fun GuidelineHistoryOverlay(
+    history: GuidelineHistoryState,
+    onClose: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        Text(
+            stringResource(R.string.leader_guideline_history_title, history.title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        when {
+            history.isLoading -> CircularProgressIndicator(color = InnovatePrimary)
+            history.items.isEmpty() -> Text(
+                stringResource(R.string.leader_guideline_history_empty),
+                color = InnovateTextSecondary
+            )
+            else -> history.items.forEach { entry ->
+                HistoryRow(entry)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        TextButton(onClick = onClose) {
+            Text(stringResource(R.string.leader_guideline_history_close))
+        }
+    }
+}
+
+@Composable
+private fun HistoryRow(entry: GuidelineHistoryEntry) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = InnovateSurface)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(historyActionLabel(entry.action), fontWeight = FontWeight.Bold)
+            Text(
+                formatDate(entry.occurredAtEpochMillis),
+                style = MaterialTheme.typography.labelSmall,
+                color = InnovateTextSecondary
+            )
+            Text(
+                stringResource(R.string.leader_guideline_history_id, entry.id),
+                style = MaterialTheme.typography.labelSmall,
+                color = InnovateTextSecondary
+            )
+            GuidelineMetaText(entry.category, entry.campaign)
+        }
+    }
+}
+
+@Composable
+private fun GuidelineMetaLine(guideline: StrategicGuideline) {
+    Spacer(modifier = Modifier.height(8.dp))
+    GuidelineMetaText(guideline.category, guideline.campaign)
+}
+
+@Composable
+private fun GuidelineMetaText(category: String?, campaign: String?) {
+    Text(
+        stringResource(
+            R.string.guideline_meta,
+            category?.takeIf { it.isNotBlank() } ?: "—",
+            campaign?.takeIf { it.isNotBlank() } ?: "—"
+        ),
+        style = MaterialTheme.typography.labelMedium,
+        color = InnovatePrimary
+    )
+}
+
+@Composable
+private fun historyActionLabel(action: String): String = when (action) {
+    "CREATED" -> stringResource(R.string.guideline_history_created)
+    "UPDATED" -> stringResource(R.string.guideline_history_updated)
+    "DELETED" -> stringResource(R.string.guideline_history_deleted)
+    else -> action
 }

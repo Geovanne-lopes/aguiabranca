@@ -14,14 +14,16 @@ class SubmitIdeaUseCase(
         title: String,
         description: String,
         category: IdeaCategory,
-        authorId: String
+        authorId: String,
+        guidelineId: String? = null
     ): Idea {
         val idea = Idea(
             id = IdGenerator.newId(),
             title = title.trim(),
             description = description.trim(),
             category = category,
-            authorId = authorId
+            authorId = authorId,
+            guidelineId = guidelineId
         )
         ideaRepository.insert(idea)
         return idea
@@ -41,11 +43,27 @@ class ObserveAllIdeasUseCase(
     operator fun invoke(): Flow<List<Idea>> = ideaRepository.observeAll()
 }
 
+class UpdateIdeaUseCase(
+    private val ideaRepository: IdeaRepository
+) {
+    suspend operator fun invoke(idea: Idea) {
+        ideaRepository.update(idea)
+    }
+}
+
+class DeleteIdeaUseCase(
+    private val ideaRepository: IdeaRepository
+) {
+    suspend operator fun invoke(ideaId: String) {
+        ideaRepository.delete(ideaId)
+    }
+}
+
 class UpdateIdeaStatusUseCase(
     private val ideaRepository: IdeaRepository
 ) {
-    suspend operator fun invoke(ideaId: String, status: IdeaStatus) {
-        ideaRepository.updateStatus(ideaId, status)
+    suspend operator fun invoke(ideaId: String, status: IdeaStatus, justification: String? = null) {
+        ideaRepository.updateStatus(ideaId, status, justification)
     }
 }
 

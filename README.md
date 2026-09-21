@@ -1,342 +1,75 @@
 # Challenge Águia Branca — Gestão de Inovação Corporativa
 
-App Android nativo (Kotlin + Jetpack Compose) para três perfis: **Operador**, **Gestor** e **Líder**.
-
-> **Regra de trabalho:** antes de implementar cada funcionalidade, consultar este README, marcar a etapa atual e implementar **uma parte por vez**.
-
----
-
-## Stack (obrigatória)
-
-| Camada | Tecnologia |
-|--------|------------|
-| Linguagem | Kotlin |
-| UI | Jetpack Compose + Material 3 |
-| Arquitetura | MVVM + Clean Architecture (Data / Domain / UI) |
-| DI | **Koin** (leve, sem KAPT; Hilt conflitou com AGP 9 + plugin Compose-only do template) |
-| Async | Coroutines + Flow |
-| Rede | Retrofit + OkHttp + Kotlinx Serialization |
-| Persistência local | Room (ideias, projetos, diretrizes, sessão) ✅ Etapa 3 |
-| Navegação | Navigation Compose |
-
----
-
-## APIs externas
-
-| Uso | Endpoint | Observação |
-|-----|----------|------------|
-| Usuários / login mock | `https://fakerapi.it/api/v1/users?_quantity=3` | Mapear 3 perfis fixos (Operador, Gestor, Líder) |
-| Insight do dia | `https://api.adviceslip.com/advice` | Card na Home do Operador |
-
----
-
-## Estrutura de pacotes (Clean + MVVM)
-
-```
-br.com.fiap.challengeaguiabranca/
-├── InnovationApplication.kt        # Inicialização Koin (Etapa 2)
-├── di/                             # Módulos Koin (Network, Database, Repository)
-├── data/
-│   ├── local/                      # Room DAO, entities
-│   ├── remote/
-│   │   ├── api/                    # Retrofit services
-│   │   ├── dto/                    # Respostas da API
-│   │   └── mapper/                 # DTO → Domain
-│   └── repository/                 # Implementações dos contratos
-├── domain/
-│   ├── model/                      # Entidades de negócio ✅ Etapa 1
-│   ├── repository/                 # Interfaces (contratos)
-│   └── usecase/                    # Casos de uso por feature
-└── ui/
-    ├── theme/                      # Material Theme
-    ├── navigation/                 # NavGraph, rotas, guards por perfil
-    ├── components/                 # Composables reutilizáveis
-    └── feature/
-        ├── auth/                   # Login e seleção de perfil
-        ├── operator/
-        │   ├── home/               # Diretrizes RO + Insight
-        │   └── ideas/              # CRUD ideias (próprias)
-        ├── manager/
-        │   ├── curation/           # Aprovar / Reprovar / Priorizar
-        │   ├── projects/             # CRUD projetos + progresso
-        │   └── guidelines/         # Leitura diretrizes
-        └── leader/
-            ├── guidelines/         # CRUD diretrizes
-            ├── tracking/           # Status de todos os projetos
-            └── dashboard/          # ROI, lucro, investimento, produtividade
-```
-
----
-
-## Matriz de funcionalidades
-
-### Operador (Operacional)
-- [x] Home: diretrizes (read-only) + Insight do Dia (API)
-- [x] Ideias: cadastro (título, descrição, categoria) + listagem própria
-
-### Gestor (Tático)
-- [x] Home/Dashboard: KPIs reais (mês vs mês), gráfico de barras, atalho para pendentes
-- [x] Curadoria: listar todas as ideias + Aprovar / Reprovar / Priorizar
-- [x] Projetos: CRUD a partir de ideias aprovadas/priorizadas + status + custos + resultados
-- [x] Orientações: consulta das diretrizes da liderança (read-only)
-
-### Líder (Estratégico)
-- [x] Diretrizes: CRUD exclusivo
-- [x] Acompanhamento: todos os projetos (investimento, prazo, status)
-- [x] Dashboard ROI: cards/gráficos com dados locais + inputs dos gestores
-
-### Infraestrutura transversal
-- [x] **Etapa 1:** Estrutura, Gradle, modelos de domínio
-- [x] **Etapa 2:** DI (Koin), Retrofit, módulos de rede, DTOs Faker + Advice
-- [x] **Etapa 3:** Room + repositórios + casos de uso base
-- [x] **Etapa 4:** Auth mock (login por perfil) + NavGraph por role
-- [x] **Etapa 5:** Feature Operador (Home + Ideias)
-- [x] **Etapa 6:** Feature Gestor (Dashboard + Curadoria + Orientações + Projetos)
-- [x] **Etapa 7:** Feature Líder (Diretrizes + Acompanhamento + Dashboard ROI)
-- [ ] **Etapa 8:** Testes unitários críticos + polish UI + validação final
-
----
-
-## Referência visual (Figma / WhatsApp)
-
-Arquivos locais: `D:\Users\Pamela\AppData\Downloads\WhatsApp Unknown 2026-05-22 at 00.05.41`  
-Cópia no workspace: pasta `assets/` do projeto.
+App Android e API da Sprint 2 para três papéis: operador, gestor e líder.
 
-**Regra:** telas Compose só após sua confirmação por etapa de UI. Esta seção é mapa funcional, não implementação.
+## O que é
 
-| Tela Figma | Perfil | O que implementar no app | Etapa prevista |
-|------------|--------|--------------------------|----------------|
-| Login InnovateCorp | Auth | E-mail/senha vinculados ao perfil (sem escolha posterior) | 4 |
-| ~~Selecione seu perfil~~ | — | **Removido** — perfil definido pelo login | — |
-| Início (Maria, nível/pontos) | Operador | Home, ações rápidas, KPIs, ideias recentes, insight API | 5 |
-| Dashboard Gestor | Gestor | KPIs, gráfico ideias/mês, resumo pendentes/projetos | 6 |
-| Dashboard Executivo (cards + gráficos) | Líder | Métricas ROI, tendência, alinhamento estratégico | 7 |
+- **App** (`app/`): Kotlin, Jetpack Compose, Koin, Retrofit. Consome a API no prefixo `/api/v1`.
+- **API** (`backend/`): Java 21, Spring Boot 3.4, Spring Security, Spring Data MongoDB, JWT (access + refresh).
 
-**Extras opcionais (implementados):**
-- [x] Operador — aba **Estratégias** (lista completa de diretrizes)
-- [x] Operador — aba **Perfil** (dados, gamificação, resumo, logout)
-- [x] Gestor — aba **Perfil** na bottom nav (resumo tático + logout)
-- [x] Gamificação com barra de progresso (derivada da quantidade de ideias enviadas)
+O enunciado cita JPA/Hibernate ou NoSQL. Este projeto persiste em **MongoDB**; JPA não se aplica. A decisão e o detalhe da API estão em [backend/README.md](backend/README.md) (ADR-001).
 
-**Observações (requisito vs. extra Figma):**
-- Gamificação (nível/pontos): **extra visual** — calculado localmente a partir das ideias do operador.
-- "Reportar Problema" vs "Nova Ideia": mesma entidade `Idea`, categoria/default diferente.
-- Gráficos (linha/barra): dados mockados/agregados de Room na Etapa 7; biblioteca de charts na UI.
-- Brand "InnovateCorp": `strings.xml` na Etapa 4/5.
+## Integração
 
----
+O login não usa FakerAPI. Ideias, projetos, diretrizes, dashboards, insight diário e insight Gemini passam pelos repositórios remotos. Access e refresh ficam no DataStore.
 
-## Etapa 1 — Concluída
+A UI esconde o botão fora do papel. A recusa é **403** no servidor.
 
-- [x] README, Gradle, modelos de domínio, pastas base
+O chat de colaboradores (`CollaboratorsChatScreen`) é local e simulado. Não há endpoint de chat.
 
----
+## Papéis
 
-## Etapa 2 — Concluída
+| Papel | O que faz |
+|-------|-----------|
+| **OPERATOR** | Lê diretrizes. Cria ideia. Edita e exclui a própria ideia enquanto está pendente (`PUT` e `DELETE /api/v1/ideas/{id}`). |
+| **MANAGER** | Lê diretrizes. Faz a curadoria da ideia (aprovar, reprovar, priorizar). CRUD de projeto. |
+| **LEADER** | CRUD de diretriz e leitura do histórico (`GET /api/v1/guidelines/{id}/history`). Lê projetos e o dashboard, inclusive o retorno por estratégia (`GET /api/v1/dashboard/strategies`). Gera o insight de IA. |
 
-- [x] Koin: `networkModule`, `dataModule`, `appModules`
-- [x] Retrofit: `FakerApiService`, `AdviceApiService`
-- [x] DTOs + `UserMapper`, `InsightMapper`
-- [x] `UserRepository` / `InsightRepository` + implementações
-- [x] Modelo `DailyInsight`
-- [x] Smoke test DEBUG → Logcat tag **`RemoteBootstrap`**
+Rotas, filtros e códigos de erro: [backend/README.md](backend/README.md).
 
-**Validar:** rodar o app com internet → Logcat filtrar `RemoteBootstrap` (3 usuários + 1 insight).
+## IA
 
----
+O Gemini roda no backend. Só o líder gera insight (`POST /api/v1/ai/insights`).
 
-## Etapa 3 — Concluída
+O zip da entrega **não inclui** `.env` (lá iriam `GEMINI_API_KEY` e `JWT_SECRET`). Quem for testar copia `backend/.env.example` para `backend/.env`.
 
-### Room (`innovation_database`)
-| Tabela | Entidade | DAO |
-|--------|----------|-----|
-| `ideas` | `IdeaEntity` | `IdeaDao` |
-| `projects` | `ProjectEntity` | `ProjectDao` |
-| `strategic_guidelines` | `StrategicGuidelineEntity` | `StrategicGuidelineDao` |
-| `user_session` | `SessionEntity` (linha única id=1) | `SessionDao` |
+- **Sem chave** (`GEMINI_API_KEY` vazia, como no example): o botão do líder funciona. A API responde **200** com `source=FALLBACK` — texto local com os números do dashboard e o aviso de que **não é análise de IA**. Não chama a Google.
+- **Com chave** (Google AI Studio, no `.env` local, depois **reiniciar** a API): `source=GEMINI` e o texto vem do modelo `gemini-3.6-flash`. Timeout, quota ou modelo indisponível também caem no fallback 200. A chave nunca vai no log nem na resposta.
 
-### Repositórios locais
-- `IdeaRepository`, `ProjectRepository`, `GuidelineRepository`, `SessionRepository`
+O insight do dia (AdviceSlip) entra pelo backend (`GET /api/v1/insights/daily`). O app não chama o AdviceSlip direto.
 
-### Casos de uso base (`domain/usecase/`)
-- **Sessão:** salvar, observar, limpar, `isLoggedIn`
-- **Ideias:** `SubmitIdea`, listar, `UpdateIdeaStatus`, contar pendentes
-- **Projetos:** criar a partir de ideia aprovada, atualizar, listar, contar ativos
-- **Diretrizes:** CRUD + observar
-- **Dashboard:** `GetRoiDashboardSummary`
+## Código que sobrou da Sprint 1
 
-### DEBUG
-- `DatabaseSeeder` — 2 diretrizes de exemplo se o banco estiver vazio
-- Logcat tag **`LocalBootstrap`** (contagens + ROI)
-
-**Validar:** rodar app → Logcat `LocalBootstrap` → `diretrizes=2` na primeira execução.
-
----
-
-## Etapa 4 — Concluída
-
-### Autenticação (1 conta = 1 perfil)
-Cada e-mail autorizado mapeia para um único `UserRole`. Não há tela de escolha de perfil após o login.
-
-| Perfil | E-mail | Senha |
-|--------|--------|-------|
-| Operador | `operador@innovatecorp.com` | `oper123` |
-| Gestor | `gestor@innovatecorp.com` | `gest123` |
-| Liderança | `lideranca@innovatecorp.com` | `lider123` |
-
-Após validar credenciais, o app busca na FakerAPI o usuário do **mesmo perfil** (nome/avatar) e salva a sessão no Room.
-
-### Telas
-- **Login** InnovateCorp
-- **Homes placeholder** — Operador / Gestor / Líder
-
-### Navegação
-- Login → home do perfil autenticado (direto)
-- Sessão salva: reabrir app vai direto à home do último perfil
-
-### MVVM
-- `LoginViewModel` + `AuthenticateUserUseCase`
-- `RoleHomeViewModel`
-
-**Fluxo de teste:** login com conta do perfil → home correta → Sair → outro perfil exige **outro e-mail/senha**.
-
-### Etapa 5 — Operador ✅
-- **Home:** banner, KPIs, insight, diretriz, ideias recentes
-- **Ideias:** formulário (título, descrição, categoria), listagem própria (Room), FAB, status
-- Atalhos da Home: Nova Ideia, Reportar Problema (categoria Outro), Ver todas → aba Ideias
-
-### Etapa 6 — Gestor ✅
-- **Shell:** `ManagerMainScreen` + bottom nav + logout
-- **Dashboard, Curadoria, Orientações, Projetos CRUD**
-
-### Etapa 7 — Líder ✅
-- **Shell:** `LeaderMainScreen` + bottom nav (Executivo, Diretrizes, Acompanhamento)
-- **Dashboard ROI:** KPIs e gráfico por status (dados reais de projetos)
-- **Diretrizes:** CRUD exclusivo
-- **Acompanhamento:** lista de projetos com investimento, lucro, ROI, prazo
-
-**Próximo:** Etapa 8 — testes unitários + polish UI.
-
----
-
-## Sprint 2 — Dá para adaptar este projeto?
-
-**Sim.** A base atual foi pensada para trocar a **fonte de dados**, não refazer o app do zero.
-
-| Hoje (Sprint 1 / protótipo) | Sprint 2 (alvo) | Esforço |
-|-----------------------------|-----------------|---------|
-| `AuthCatalog` + Room sessão | `POST /auth/login` → JWT + `role` | Médio — trocar `AuthenticateUserUseCase` + interceptor OkHttp |
-| `IdeaRepositoryImpl` (Room) | `IdeaRepositoryApiImpl` (Retrofit) | Médio — **mesma interface** `IdeaRepository` |
-| `ProjectRepositoryImpl` (Room) | API + opcional cache Room | Médio |
-| `GuidelineRepositoryImpl` (Room) | API + RBAC no servidor | Médio |
-| FakerAPI (nome/avatar) | Backend devolve `User` no login | Baixo |
-| Advice Slip (insight) | Mantém externo ou proxy no backend | Baixo |
-| NavGraph por `UserRole` | **Mantém** | Baixo |
-| ViewModels / Use Cases | **Mantém** (chamam repositório) | Baixo |
-| Telas Compose | **Mantém** (ajuste de estados/erros HTTP) | Baixo–médio |
-
-**O que NÃO joga fora:** `domain/model`, `domain/repository` (contratos), `domain/usecase`, `ui/feature/*`, navegação por perfil, tema.
-
-**O que cresce (novo repo ou módulo):** API REST própria (Spring Boot, Node, etc.) com auth, CRUD e **restrições por role**.
-
-**Risco se ignorar agora:** colocar regra de negócio só na UI (ex.: botão “Aprovar” escondido) sem 403 no backend — na Sprint 2 a correção é no servidor.
-
----
-
-## Matriz RBAC (referência Sprint 2)
-
-Legenda: ✅ permitido · ❌ proibido · 🔶 permitido com escopo limitado
-
-### 1) Funcionalidades × perfil (regra de negócio)
-
-| Funcionalidade | Operador | Gestor | Líder |
-|----------------|:--------:|:------:|:-----:|
-| Login (conta própria) | ✅ | ✅ | ✅ |
-| Ver insight do dia (API externa) | ✅ | 🔶 | 🔶 |
-| Ler diretrizes estratégicas | ✅ | ✅ | ✅ |
-| Criar/editar/excluir diretrizes | ❌ | ❌ | ✅ |
-| Cadastrar ideia / problema | ✅ | 🔶 | 🔶 |
-| Listar **próprias** ideias | ✅ | ✅ | ✅ |
-| Listar **todas** ideias (curadoria) | ❌ | ✅ | ✅ |
-| Aprovar / reprovar / priorizar ideia | ❌ | ✅ | 🔶 |
-| Criar projeto a partir de ideia aprovada | ❌ | ✅ | ❌ |
-| Atualizar projeto (status, custos, ROI inputs) | ❌ | ✅ | 🔶 |
-| Listar todos os projetos (acompanhamento) | ❌ | ✅ | ✅ |
-| Dashboard ROI / métricas agregadas | ❌ | 🔶 | ✅ |
-
-🔶 = definir no enunciado Sprint 2 (ex.: líder só leitura em curadoria, gestor vê ROI resumido).
-
-### 2) Endpoints REST sugeridos (backend Sprint 2)
-
-Base: `/api/v1` — header: `Authorization: Bearer <token>`
-
-| Método | Endpoint | Operador | Gestor | Líder |
-|--------|----------|:--------:|:------:|:-----:|
-| `POST` | `/auth/login` | ✅ | ✅ | ✅ |
-| `GET` | `/auth/me` | ✅ | ✅ | ✅ |
-| `GET` | `/insights/daily` | ✅ | ✅ | ✅ |
-| `GET` | `/guidelines` | ✅ | ✅ | ✅ |
-| `POST` | `/guidelines` | ❌ | ❌ | ✅ |
-| `PUT` | `/guidelines/{id}` | ❌ | ❌ | ✅ |
-| `DELETE` | `/guidelines/{id}` | ❌ | ❌ | ✅ |
-| `GET` | `/ideas` | 🔶 só `?mine=true` | ✅ todas | ✅ todas |
-| `POST` | `/ideas` | ✅ | ✅ | ✅ |
-| `GET` | `/ideas/{id}` | 🔶 se autor | ✅ | ✅ |
-| `PATCH` | `/ideas/{id}/status` | ❌ | ✅ | 🔶 |
-| `GET` | `/projects` | ❌ | ✅ | ✅ |
-| `POST` | `/projects` | ❌ | ✅ | ❌ |
-| `PUT` | `/projects/{id}` | ❌ | ✅ | 🔶 |
-| `GET` | `/dashboard/roi` | ❌ | 🔶 | ✅ |
-
-Respostas esperadas ao violar perfil: **`403 Forbidden`** (corpo com código, ex.: `ROLE_NOT_ALLOWED`).
-
-### 3) O que o app Android faz em cada camada
-
-| Camada | Sprint 1 (hoje) | Sprint 2 |
-|--------|-----------------|----------|
-| **UI** | Esconde rotas/botões por `UserRole` | Igual + trata `403` com mensagem clara |
-| **Domain** | Use cases sem saber origem dos dados | Igual |
-| **Data** | Room + APIs públicas | Retrofit → **seu backend** (+ Room opcional como cache) |
-| **Auth** | `AuthCatalog` local | Token JWT persistido; role vinda do backend |
-
-### 4) Checklist de migração (quando a Sprint 2 abrir)
-
-- [ ] Backend: usuários, login, JWT com claim `role`
-- [ ] Middleware/guard por role em **cada** rota da tabela acima
-- [ ] App: `AuthApi`, `TokenStorage` (DataStore), interceptor Bearer
-- [ ] App: implementações `*RepositoryImpl` remotas mantendo interfaces
-- [ ] Teste Postman: operador recebe 403 em `PATCH /ideas/{id}/status`
-- [ ] Logs/auditoria no backend (quem aprovou ideia, quando) — governança do slide
-- [ ] Manter Advice Slip (externo) ou expor via `GET /insights/daily` no backend
-
----
-
-## Critérios de aceite (desafio)
-
-- Duas APIs REST consumidas de forma funcional
-- Três perfis com fluxos distintos e navegação coerente
-- MVVM visível (ViewModel + UI state + Repository)
-- Código legível, camadas separadas, sem lógica de negócio na Composable
-
----
+Room e clientes antigos de API pública podem ainda existir no repositório. Não são a fonte de verdade de login, ideias, projetos ou diretrizes.
 
 ## Como rodar
 
-1. Abrir no Android Studio (Giraffe ou superior).
-2. Sync Gradle.
-3. Executar em emulador/dispositivo API 28+.
+Mongo e API, no PowerShell (aspas no `-D` são obrigatórias):
 
-### Contas demo
+```powershell
+docker start aguia-mongo 2>$null; if ($LASTEXITCODE -ne 0) { docker run -d --name aguia-mongo -p 27017:27017 mongo:7 }
+cd backend
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
 
-| Perfil | E-mail | Senha |
-|--------|--------|-------|
+Seed, arquivo `.env` e Swagger (`http://localhost:8080/swagger-ui.html`): [backend/README.md](backend/README.md).
+
+App: Android Studio, emulador. O padrão já é `API_BASE_URL=http://10.0.2.2:8080/`.
+
+### Contas demo (profile `local`)
+
+| Papel | E-mail | Senha |
+|-------|--------|-------|
 | Operador | `operador@innovatecorp.com` | `oper123` |
 | Gestor | `gestor@innovatecorp.com` | `gest123` |
 | Liderança | `lideranca@innovatecorp.com` | `lider123` |
 
----
+## Entregas
 
-## Notas acadêmicas
+| Pasta | Conteúdo |
+|-------|----------|
+| [entregas/Sprint-1/](entregas/Sprint-1/) | Protótipo do primeiro semestre (APK, zip, PDF). |
+| [entregas/Sprint-2/](entregas/Sprint-2/) | Zip da API, zip do app + APK, apresentação. |
+| [entregas/README.md](entregas/README.md) | Índice das pastas. |
 
-- Código gerado com assistência de IA deve ser **entendido, testado e adaptado** antes da entrega.
-- Validar com o enunciado/rubrica da FIAP uso de IA e escopo em grupo.
+`specs/` é material interno de desenvolvimento. A banca entra por este README e por [backend/README.md](backend/README.md).

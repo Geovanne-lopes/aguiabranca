@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fiap.challengeaguiabranca.domain.model.ManagerNotification
 import br.com.fiap.challengeaguiabranca.domain.model.OperatorActivity
-import br.com.fiap.challengeaguiabranca.domain.usecase.idea.ObserveAllIdeasUseCase
 import br.com.fiap.challengeaguiabranca.domain.usecase.manager.GetOperatorActivityRankingUseCase
-import br.com.fiap.challengeaguiabranca.domain.usecase.manager.ObserveManagerSuggestionsUseCase
-import br.com.fiap.challengeaguiabranca.domain.util.ManagerNotificationsBuilder
+import br.com.fiap.challengeaguiabranca.domain.usecase.notification.ObserveManagementNotificationsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,9 +20,8 @@ data class ManagerMainUiState(
 )
 
 class ManagerMainViewModel(
-    observeAllIdeasUseCase: ObserveAllIdeasUseCase,
-    getOperatorActivityRankingUseCase: GetOperatorActivityRankingUseCase,
-    observeManagerSuggestionsUseCase: ObserveManagerSuggestionsUseCase
+    observeManagementNotificationsUseCase: ObserveManagementNotificationsUseCase,
+    getOperatorActivityRankingUseCase: GetOperatorActivityRankingUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ManagerMainUiState())
@@ -39,11 +36,9 @@ class ManagerMainViewModel(
     init {
         viewModelScope.launch {
             combine(
-                observeAllIdeasUseCase(),
-                getOperatorActivityRankingUseCase(),
-                observeManagerSuggestionsUseCase()
-            ) { ideas, ranking, suggestions ->
-                val notifications = ManagerNotificationsBuilder.build(ideas, suggestions)
+                observeManagementNotificationsUseCase(),
+                getOperatorActivityRankingUseCase()
+            ) { notifications, ranking ->
                 val signature = notifications.joinToString { it.id }
                 if (signature != lastNotificationSignature) {
                     if (lastNotificationSignature.isNotEmpty()) {

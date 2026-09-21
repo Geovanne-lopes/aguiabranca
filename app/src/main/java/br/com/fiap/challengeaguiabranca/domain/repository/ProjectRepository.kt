@@ -10,6 +10,7 @@ interface ProjectRepository {
     suspend fun getById(id: String): Project?
     suspend fun getByIdeaId(ideaId: String): Project?
     suspend fun insert(project: Project)
+    suspend fun createFromIdea(ideaId: String): Project
     suspend fun update(project: Project)
     suspend fun delete(id: String)
 }
