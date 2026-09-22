@@ -8,9 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-/**
- * Smoke test de rede em DEBUG — validar Etapa 2 via Logcat (tag: RemoteBootstrap).
- */
 object RemoteBootstrapVerifier {
 
     private const val TAG = "RemoteBootstrap"
@@ -23,7 +20,7 @@ object RemoteBootstrapVerifier {
         scope.launch {
             runCatching {
                 val users = userRepository.fetchSeedUsers()
-                Log.d(TAG, "FakerAPI OK — usuários: ${users.size}")
+                Log.d(TAG, "Usuários demo OK — total: ${users.size}")
                 users.forEach { user ->
                     Log.d(TAG, "  ${user.role}: ${user.name} <${user.email}>")
                 }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
-// Paleta InnovateCorp — alinhada ao web-preview/src/theme.css
 val InnovatePrimary = Color(0xFF6D5DFC)
 val InnovatePrimaryDark = Color(0xFF5746D8)
 val InnovatePrimaryLight = Color(0xFFA29BFE)
@@ -39,9 +38,6 @@ val InnovateError = Color(0xFFEF4444)
 val InnovateLogoBackground = Color(0xFFFFE8D5)
 val InnovateLogoForeground = Color(0xFF9A3412)
 
-// Aliases theme-aware: resolvem para o valor claro/escuro de acordo
-// com LocalInnovateDarkTheme. Mantém o nome usado em toda a base sem
-// quebrar call sites.
 val InnovateBackground: Color
     @Composable
     @ReadOnlyComposable

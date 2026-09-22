@@ -1,9 +1,5 @@
 package br.com.fiap.challengeaguiabranca.domain.model
 
-/**
- * Projeto ativo derivado de uma ideia aprovada.
- * Campos financeiros alimentam o dashboard do Líder.
- */
 data class Project(
     val id: String,
     val ideaId: String,

@@ -6,9 +6,6 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
-/**
- * Calcula tendência real comparando ideias do mês atual vs. mês anterior (por [Idea.createdAtEpochMillis]).
- */
 object OperatorKpiTrend {
 
     fun submittedTrend(ideas: List<Idea>): String =

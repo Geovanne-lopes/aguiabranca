@@ -8,9 +8,6 @@ import br.com.fiap.challengeaguiabranca.domain.model.IdeaStatus
 import br.com.fiap.challengeaguiabranca.domain.util.IdGenerator
 import kotlinx.coroutines.flow.first
 
-/**
- * Popula dados de demonstração quando o banco está vazio (apenas DEBUG).
- */
 class DatabaseSeeder(
     private val database: InnovationDatabase
 ) {

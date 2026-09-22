@@ -1,8 +1,5 @@
 package br.com.fiap.challengeaguiabranca.domain.model
 
-/**
- * Agregação para o dashboard do Líder (calculada a partir dos projetos locais).
- */
 data class RoiDashboardSummary(
     val totalInvestment: Double,
     val totalObtainedProfit: Double,

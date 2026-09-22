@@ -47,7 +47,6 @@ import org.koin.dsl.module
 
 val useCaseModule = module {
 
-    // Auth
     factory { FetchSeedUsersUseCase(get()) }
     factory { FetchDailyInsightUseCase(get()) }
     factory { AuthenticateUserUseCase(get(), get()) }
@@ -63,7 +62,6 @@ val useCaseModule = module {
     factory { ObserveLeaderDashboardUseCase(get()) }
     factory { ObserveStrategyReturnsUseCase(get()) }
 
-    // Session
     factory { SaveUserSessionUseCase(get()) }
     factory { GetCurrentUserUseCase(get()) }
     factory { ObserveCurrentUserUseCase(get()) }
@@ -71,7 +69,6 @@ val useCaseModule = module {
     factory { IsLoggedInUseCase(get()) }
     factory { UpdateUserProfileUseCase(get(), get()) }
 
-    // Ideas
     factory { SubmitIdeaUseCase(get()) }
     factory { UpdateIdeaUseCase(get()) }
     factory { DeleteIdeaUseCase(get()) }
@@ -80,24 +77,20 @@ val useCaseModule = module {
     factory { UpdateIdeaStatusUseCase(get()) }
     factory { GetPendingIdeasCountUseCase(get()) }
 
-    // Projects
     factory { ObserveAllProjectsUseCase(get()) }
     factory { CreateProjectFromIdeaUseCase(get()) }
     factory { UpdateProjectUseCase(get()) }
     factory { DeleteProjectUseCase(get()) }
     factory { GetActiveProjectsCountUseCase(get()) }
 
-    // Guidelines
     factory { ObserveGuidelinesUseCase(get()) }
     factory { CreateGuidelineUseCase(get()) }
     factory { UpdateGuidelineUseCase(get()) }
     factory { DeleteGuidelineUseCase(get()) }
     factory { GetGuidelineHistoryUseCase(get()) }
 
-    // Dashboard
     factory { GetRoiDashboardSummaryUseCase(get()) }
 
-    // Manager
     factory { GetOperatorActivityRankingUseCase(get()) }
     factory { GetMonthlyOperatorRankingUseCase(get()) }
     factory { SendManagerSuggestionUseCase(get()) }

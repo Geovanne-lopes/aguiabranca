@@ -13,9 +13,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-/**
- * Smoke test Room em DEBUG — Logcat tag: LocalBootstrap
- */
 object LocalBootstrapVerifier {
 
     private const val TAG = "LocalBootstrap"

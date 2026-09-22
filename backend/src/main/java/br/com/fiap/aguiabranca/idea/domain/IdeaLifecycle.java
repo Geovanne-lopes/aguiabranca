@@ -3,9 +3,8 @@ package br.com.fiap.aguiabranca.idea.domain;
 import java.util.Optional;
 
 /**
- * Máquina de status da ideia. O servidor é a autoridade.
- * {@code hasProject} é o gancho da fatia de projetos: reprovar a partir de
- * APPROVED ou PRIORITIZED é proibido quando já existe projeto.
+ * Máquina de status da ideia. Reprovar a partir de APPROVED ou PRIORITIZED
+ * é proibido quando já existe projeto vinculado.
  */
 public final class IdeaLifecycle {
 
