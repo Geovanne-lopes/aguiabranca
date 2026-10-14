@@ -1,0 +1,40 @@
+name: Deploy environment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: GitHub Environment and matching Compose stack
+        required: true
+        type: string
+      image_ref:
+        description: Immutable GHCR image reference using sha256 digest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment }} over SSH
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - name: Checkout deployment files
+        uses: actions/checkout@v4
+
+      - name: Deploy immutable image and verify health
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          IMAGE_REF: ${{ inputs.image_ref }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_DIRECTORY: ${{ secrets.DEPLOY_DIRECTORY }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_ENV_FILE: ${{ secrets.DEPLOY_ENV_FILE }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_READ_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
+        run: bash scripts/deploy-ssh.sh

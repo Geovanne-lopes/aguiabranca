@@ -1,0 +1,14 @@
+.git
+.idea
+.vscode
+**/target
+**/build
+**/.gradle
+**/.kotlin
+**/.env
+**/.env.*
+**/local.properties
+**/*.apk
+**/*.aab
+web-preview/node_modules
+web-preview/dist

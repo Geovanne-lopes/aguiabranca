@@ -2,6 +2,33 @@
 
 App Android e API da Sprint 2 para três papéis: operador, gestor e líder.
 
+## Arquitetura e tecnologias
+
+- **Android:** Kotlin, Jetpack Compose, Gradle 9.3.1, Android Gradle Plugin 9.1.1.
+- **API:** Java 21, Spring Boot 3.4.13, Maven, Spring Security, JWT e Spring Data MongoDB.
+- **Persistência:** MongoDB 7. A API recebe a URI pela variável `MONGODB_URI`; dentro do Compose ela usa o hostname do serviço `mongo`.
+- **Containers:** Docker multi-stage para compilar e executar somente a API; Compose para API e MongoDB.
+- **CI/CD:** GitHub Actions executa testes/build Android e backend, publica a API no GHCR por digest e oferece deploy SSH para staging e produção.
+
+### Estrutura relevante
+
+| Caminho | Conteúdo |
+|----------|----------|
+| `app/` | Aplicativo Android e testes locais. |
+| `backend/` | API Spring Boot, testes Maven e Dockerfile. |
+| `compose.yaml` | Stack local da API e MongoDB. |
+| `compose.staging.yaml` / `compose.production.yaml` | Stacks isoladas para deploy. |
+| `.github/workflows/` | CI, publicação GHCR e workflow reutilizável de deploy. |
+| `scripts/deploy-ssh.sh` | Atualização remota por SSH com healthcheck. |
+| `docs/devops-technical.md` | Relatório técnico e espaços para evidências. |
+
+### Pré-requisitos
+
+- Docker Desktop com Docker Compose v2 para containerização local.
+- JDK 21 e Maven 3.9+ para o backend local.
+- JDK 21 e Android SDK para build/teste Android; use `gradlew.bat` no Windows ou `./gradlew` no Linux/macOS.
+- GitHub Actions habilitado para CI/publicação. Servidor Linux com Docker Compose, SSH e `curl` só é necessário para deploy.
+
 ## O que é
 
 - **App** (`app/`): Kotlin, Jetpack Compose, Koin, Retrofit. Consome a API no prefixo `/api/v1`.
@@ -53,6 +80,78 @@ mvn spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
 Seed, arquivo `.env` e Swagger (`http://localhost:8080/swagger-ui.html`): [backend/README.md](backend/README.md).
+
+### Docker
+
+Com Docker Desktop iniciado, crie a configuração local e suba a API com o MongoDB:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+docker compose up --build -d
+docker compose ps
+docker compose logs -f api mongo
+```
+
+Healthcheck da API: `Invoke-RestMethod http://localhost:8080/actuator/health`. Swagger: `http://localhost:8080/swagger-ui.html`. O profile `local` habilita as contas demo. MongoDB usa o volume `aguiabranca_mongo-data`, a rede `aguiabranca-local` e só publica `27017` no loopback. Para parar sem apagar dados, use `docker compose down`; `docker compose down -v` remove os dados locais.
+
+O `.env` é ignorado pelo Git e não entra na imagem. Antes de uso fora da máquina local, substitua o `JWT_SECRET` ilustrativo por um segredo aleatório próprio com pelo menos 32 bytes. O app Android continua executado no Android Studio/emulador; no emulador, use `http://10.0.2.2:8080/`.
+
+### Build e testes
+
+Na raiz do repositório, com JDK 21 e Maven instalados:
+
+```powershell
+mvn -B -f backend/pom.xml clean verify
+./gradlew :app:testDebugUnitTest :app:assembleDebug
+docker build -f backend/Dockerfile -t aguiabranca-api:local .
+```
+
+O backend contém testes unitários e testes de integração com Testcontainers; a execução completa precisa de Docker. O projeto não tem Maven Wrapper, por isso o CI instala/configura Maven via `actions/setup-java` e usa o Maven disponível no runner. No Windows, use `gradlew.bat :app:testDebugUnitTest :app:assembleDebug`.
+
+### CI e publicação da imagem
+
+`.github/workflows/ci.yml` roda em pull requests e pushes para `main`/`master`; tags `v*.*.*` também disparam o pipeline. O job backend executa `mvn -B -f backend/pom.xml clean verify` e publica relatórios Surefire como artefato. O job Android executa testes unitários e `assembleDebug`, publicando os relatórios e o APK. A imagem Docker da API é construída e enviada ao `ghcr.io/<owner>/<repo>` apenas depois desses jobs passarem, com tag `sha-<commit>` e referência imutável `@sha256:<digest>` para deploy.
+
+Para visualizar resultados, abra **Actions** no GitHub, selecione a execução e baixe `backend-test-reports`, `android-test-reports` ou `aguiabranca-debug-apk`. O pacote GHCR usa `GITHUB_TOKEN` com permissão `packages: write`; não há token de publicação fixo no repositório.
+
+### Staging e produção
+
+`compose.staging.yaml` e `compose.production.yaml` criam bancos, volumes, redes e nomes de projeto distintos. MongoDB não tem porta publicada nesses ambientes. A API fica vinculada a `127.0.0.1:8081` em staging e `127.0.0.1:8082` em produção; configure um reverse proxy TLS no servidor para tráfego externo. Healthcheck do container consulta Actuator e o deploy também aguarda `GET /actuator/health` no host remoto.
+
+O push em `main`/`master` pode acionar staging, mas somente depois de cadastrar a variável de repositório `STAGING_DEPLOY_ENABLED=true`. Uma tag Git `vX.Y.Z` publica a imagem validada e inicia o deploy de produção no GitHub Environment `production`; configure nesse Environment a aprovação manual dos responsáveis. Ambos os deploys reutilizam o mesmo digest que foi gerado pelo build.
+
+Em **Settings > Environments**, crie `staging` e `production`. Em cada ambiente, cadastre separadamente os secrets:
+
+- `DEPLOY_HOST`: hostname/IP do servidor Linux.
+- `DEPLOY_USER`: usuário SSH com acesso ao Docker/Compose.
+- `DEPLOY_DIRECTORY`: caminho absoluto diferente por ambiente (por exemplo `/opt/aguiabranca/staging` e `/opt/aguiabranca/production`).
+- `DEPLOY_SSH_PRIVATE_KEY`: chave privada dedicada ao deploy.
+- `DEPLOY_KNOWN_HOSTS`: linha(s) verificadas de `known_hosts`; não desative a validação da chave do host.
+- `DEPLOY_ENV_FILE`: conteúdo completo do arquivo de ambiente daquele ambiente, baseado em `.env.staging.example` ou `.env.production.example`, com segredos próprios. Use senha Mongo URL-safe e não reutilize a senha nem o `JWT_SECRET` entre ambientes.
+- `GHCR_USERNAME` e `GHCR_READ_TOKEN`: necessários se o pacote GHCR for privado; o token remoto precisa somente de `read:packages`. Para pacote público, podem ficar vazios.
+
+O servidor deve ter Docker Engine/Compose, `curl`, acesso de saída ao GHCR e portas 8081/8082 livres localmente. O deploy não provisiona o host, TLS, DNS, backup ou firewall. O CI de publicação funciona sem servidores; os jobs de deploy ainda não podem ser considerados realizados até cadastrar esses secrets e obter uma execução saudável.
+
+### Evidências e limitações
+
+Registre a URL/ID da execução GitHub Actions, resultado dos jobs, relatório de testes e digest GHCR. Para deploy, anexe também a aprovação do Environment de produção, a saída do healthcheck e `docker compose ps`/logs sem dados sensíveis. Os campos para essas evidências estão em [docs/devops-technical.md](docs/devops-technical.md); não há evidência fictícia neste repositório.
+
+Nesta entrega, a sintaxe dos três Compose foi validada localmente, mas a imagem não foi construída nem os containers iniciados porque o Docker Desktop daemon não estava ativo. Maven também não está instalado neste host. Não foram executados workflows GitHub nem deploys; esses itens dependem do runner, registry, servidores e secrets acima.
+
+### Checklist de entrega
+
+- [x] Projeto compactado em ZIP com estrutura organizada (geração após esta validação; artefato indicado no relatório final).
+- [ ] Dockerfile funcional (healthcheck e build multi-stage implementados; build não validado por daemon indisponível).
+- [x] Docker Compose para API/MongoDB, incluindo configurações isoladas de staging e produção.
+- [x] Volumes, redes e variáveis de ambiente configurados; `.env` ignorado.
+- [x] Pipeline com build automático definido.
+- [x] Testes automatizados ligados ao pipeline; execução local pendente.
+- [ ] Imagem Docker construída e publicada no GHCR.
+- [ ] Deploy em staging realizado e validado.
+- [ ] Deploy em produção realizado e validado.
+- [x] README com instruções e procedimento para anexar evidências.
+- [x] Documentação técnica preparada em Markdown com campos para evidências, pronta para exportar a PDF.
+- [x] Segredos não adicionados aos arquivos versionados; os arquivos `.env` reais são ignorados.
 
 App: Android Studio, emulador. O padrão já é `API_BASE_URL=http://10.0.2.2:8080/`.
 

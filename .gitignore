@@ -19,4 +19,7 @@ local.properties
 backend/target/
 backend/.env
 .env
+.env.*
+!.env.example
+!.env.*.example
 
