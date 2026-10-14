@@ -9,6 +9,7 @@ import org.testcontainers.containers.MongoDBContainer;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@DisabledWhenDockerUnavailable
 public abstract class AbstractMongoIT {
 
     @ServiceConnection

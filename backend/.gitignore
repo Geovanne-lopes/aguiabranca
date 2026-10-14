@@ -1,5 +1,7 @@
 target/
 .env
+.env.*
+!.env.*.example
 application-prod.yml
 *.jar
 *.war
