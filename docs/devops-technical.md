@@ -105,11 +105,12 @@ Antes dos dois últimos comandos, crie arquivos locais a partir dos exemplos e p
 
 ## 6. Evidências reais
 
-Não há prints nem resultados simulados neste relatório. Preencher após executar as etapas:
+Não há imagens anexadas nem resultados de staging/produção. A execução local foi confirmada pelo usuário no terminal; registrar uma captura de tela real aqui quando disponível. Não incluir resultados simulados:
 
 | Evidência | Registro a inserir |
 |---|---|
-| Execução dos testes/build local ou CI | **PENDENTE** — URL da execução, commit e resultado dos jobs. |
+| Compose local | **Executado** — `docker compose ps` mostrou `aguiabranca-api-1` e `aguiabranca-mongo-1` como `healthy`. |
+| Execução dos testes/build CI | **PENDENTE** — URL da execução, commit e resultado dos jobs. Push da branch foi recusado pelo GitHub por falta de permissão. |
 | Relatórios Surefire e Android | **PENDENTE** — anexar artefatos baixados da execução. |
 | Digest GHCR publicado | **PENDENTE** — digest e página do package. |
 | Staging | **PENDENTE** — ID do deploy, `docker compose ps` e resposta real de `/actuator/health`. |
@@ -124,21 +125,21 @@ Não anexar logs contendo tokens, JWT, senhas, e-mails reais ou valores de `.env
 | Estrutura, versões e testes existentes | API Java 21/Spring Boot 3.4.13/Maven; app Gradle; testes backend e Testcontainers encontrados. |
 | Compose local, staging e produção | Configuração validada com Docker Compose 5.0.2 e arquivos de exemplo. |
 | `git diff --check` | Executado; registrar o resultado final após a edição documental. |
-| Build da imagem | **Bloqueado**: Docker Desktop daemon indisponível neste host. |
-| Build/testes Maven | **Bloqueado**: Maven não instalado neste host. |
-| Workflows GitHub / GHCR | **Não executados** neste workspace; requerem push para GitHub Actions. |
+| Build e inicialização local | **Executados pelo usuário**: `docker compose up --build -d` concluiu; API e MongoDB ficaram `healthy`. |
+| Testes Maven | **Concluídos localmente**; os testes Testcontainers foram ignorados no ambiente onde o processo Maven não detectou Docker. |
+| Workflows GitHub / GHCR | **Não executados**; o push foi recusado por falta de permissão no repositório remoto. |
 | Deploy staging/produção | **Não executados**; requerem hosts, secrets e aprovação/configuração dos Environments. |
 | PDF | Fonte Markdown pronta para exportação; inserir nomes/evidências e exportar após validação real. |
 
 ## 8. Checklist final
 
 - [ ] Projeto compactado em ZIP com estrutura organizada.
-- [ ] Dockerfile funcional e imagem construída.
+- [x] Dockerfile multi-stage construído e aplicação iniciada localmente pelo Compose.
 - [x] Docker Compose ou configuração Kubernetes.
 - [x] Volumes, redes e variáveis de ambiente configurados.
 - [x] Pipeline com build automático.
-- [x] Testes automatizados executados no pipeline (execução GitHub ainda pendente).
-- [ ] Imagem Docker construída e publicada, quando a infraestrutura permitir.
+- [ ] Testes automatizados executados no GitHub Actions (execução pendente; o Maven local concluiu com Testcontainers ignorado sem Docker).
+- [ ] Imagem Docker publicada no GHCR.
 - [ ] Deploy em staging realizado e validado.
 - [ ] Deploy em produção realizado e validado.
 - [x] README com instruções e orientação de evidências.

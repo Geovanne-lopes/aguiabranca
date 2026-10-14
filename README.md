@@ -1,14 +1,18 @@
-# Challenge Águia Branca — Gestão de Inovação Corporativa
+# Projeto — Cidades ESG Inteligentes
 
-App Android e API da Sprint 2 para três papéis: operador, gestor e líder.
+Aplicativo Android e API da Sprint 2 para apoiar a gestão de inovação corporativa nos papéis de operador, gestor e líder.
 
-## Arquitetura e tecnologias
+## Tecnologias utilizadas
 
-- **Android:** Kotlin, Jetpack Compose, Gradle 9.3.1, Android Gradle Plugin 9.1.1.
-- **API:** Java 21, Spring Boot 3.4.13, Maven, Spring Security, JWT e Spring Data MongoDB.
-- **Persistência:** MongoDB 7. A API recebe a URI pela variável `MONGODB_URI`; dentro do Compose ela usa o hostname do serviço `mongo`.
-- **Containers:** Docker multi-stage para compilar e executar somente a API; Compose para API e MongoDB.
-- **CI/CD:** GitHub Actions executa testes/build Android e backend, publica a API no GHCR por digest e oferece deploy SSH para staging e produção.
+- **Android:** Kotlin, Jetpack Compose, Koin, Retrofit, Gradle 9.3.1 e Android Gradle Plugin 9.1.1.
+- **Backend/API:** Java 21, Spring Boot 3.4.13, Maven, Spring Security, Spring Data MongoDB, JWT e Springdoc OpenAPI.
+- **Banco de dados:** MongoDB 7.
+- **Containerização:** Docker, Docker Compose v2 e imagens multi-stage.
+- **CI/CD e registry:** GitHub Actions e GitHub Container Registry (GHCR).
+- **Deploy:** Linux, SSH, Docker Compose e healthcheck HTTP do Spring Actuator.
+- **Integrações externas:** Google Gemini e AdviceSlip; a chave do Gemini é opcional.
+
+## Arquitetura
 
 ### Estrutura relevante
 
@@ -69,24 +73,12 @@ O insight do dia (AdviceSlip) entra pelo backend (`GET /api/v1/insights/daily`).
 
 Room e clientes antigos de API pública podem ainda existir no repositório. Não são a fonte de verdade de login, ideias, projetos ou diretrizes.
 
-## Como rodar
+## Como executar localmente com Docker
 
-Mongo e API, no PowerShell (aspas no `-D` são obrigatórias):
-
-```powershell
-docker start aguia-mongo 2>$null; if ($LASTEXITCODE -ne 0) { docker run -d --name aguia-mongo -p 27017:27017 mongo:7 }
-cd backend
-mvn spring-boot:run "-Dspring-boot.run.profiles=local"
-```
-
-Seed, arquivo `.env` e Swagger (`http://localhost:8080/swagger-ui.html`): [backend/README.md](backend/README.md).
-
-### Docker
-
-Com Docker Desktop iniciado, crie a configuração local e suba a API com o MongoDB:
+Requisitos: Docker Desktop iniciado com Docker Compose v2. No PowerShell, execute os comandos a partir da raiz do repositório:
 
 ```powershell
-Copy-Item backend/.env.example backend/.env
+if (-not (Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
 docker compose up --build -d
 docker compose ps
 docker compose logs -f api mongo
@@ -96,21 +88,90 @@ Healthcheck da API: `Invoke-RestMethod http://localhost:8080/actuator/health`. S
 
 O `.env` é ignorado pelo Git e não entra na imagem. Antes de uso fora da máquina local, substitua o `JWT_SECRET` ilustrativo por um segredo aleatório próprio com pelo menos 32 bytes. O app Android continua executado no Android Studio/emulador; no emulador, use `http://10.0.2.2:8080/`.
 
+### Evidência da execução local
+
+A saída abaixo foi compartilhada após a execução do Compose; API e MongoDB estavam saudáveis:
+
+```text
+NAME                  IMAGE             SERVICE   STATUS
+aguiabranca-api-1      aguiabranca-api   api       Up (healthy)
+aguiabranca-mongo-1    mongo:7           mongo     Up (healthy)
+```
+
+### Execução da API sem container
+
+Para executar a API no host, use JDK 21, Maven 3.9+ e MongoDB 7 local:
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+Detalhes do seed, das contas de demonstração e do Swagger estão em [backend/README.md](backend/README.md).
+
+## Containerização
+
+O [backend/Dockerfile](backend/Dockerfile) usa build multi-stage: Maven e JDK 21 compilam o artefato; a imagem final contém JRE 21, o JAR executável e `curl` para o healthcheck. O processo roda sem root (UID/GID 10001), expõe a porta 8080 e verifica o Actuator. O [`.dockerignore`](.dockerignore) exclui artefatos locais e arquivos `.env`. O Compose local orquestra API e MongoDB; os arquivos de staging e produção isolam redes, volumes e bancos.
+
+Conteúdo do Dockerfile utilizado:
+
+<details>
+<summary>Mostrar Dockerfile</summary>
+
+```dockerfile
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+
+COPY backend/pom.xml ./pom.xml
+RUN mvn -B -DskipTests dependency:go-offline
+
+COPY backend/src ./src
+RUN mvn -B -DskipTests package
+
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends curl \
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /workspace/target/aguiabranca-api-*.jar app.jar
+
+EXPOSE 8080
+USER 10001:10001
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
+	CMD curl --fail --silent http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+```
+
+</details>
+
 ### Build e testes
 
 Na raiz do repositório, com JDK 21 e Maven instalados:
 
 ```powershell
 mvn -B -f backend/pom.xml clean verify
-./gradlew :app:testDebugUnitTest :app:assembleDebug
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug
 docker build -f backend/Dockerfile -t aguiabranca-api:local .
 ```
 
-O backend contém testes unitários e testes de integração com Testcontainers; a execução completa precisa de Docker. O projeto não tem Maven Wrapper, por isso o CI instala/configura Maven via `actions/setup-java` e usa o Maven disponível no runner. No Windows, use `gradlew.bat :app:testDebugUnitTest :app:assembleDebug`.
+O backend contém testes unitários e testes de integração com Testcontainers; a execução completa precisa de Docker. O projeto não tem Maven Wrapper, por isso o CI instala/configura Maven via `actions/setup-java` e usa o Maven disponível no runner.
 
-### CI e publicação da imagem
+## Pipeline CI/CD
 
-`.github/workflows/ci.yml` roda em pull requests e pushes para `main`/`master`; tags `v*.*.*` também disparam o pipeline. O job backend executa `mvn -B -f backend/pom.xml clean verify` e publica relatórios Surefire como artefato. O job Android executa testes unitários e `assembleDebug`, publicando os relatórios e o APK. A imagem Docker da API é construída e enviada ao `ghcr.io/<owner>/<repo>` apenas depois desses jobs passarem, com tag `sha-<commit>` e referência imutável `@sha256:<digest>` para deploy.
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) é acionado em pull requests para `main`/`master`, pushes para essas branches e tags `v*.*.*`.
+
+1. **Backend:** configura Java 21 e cache Maven, executa `mvn -B -f backend/pom.xml clean verify` e publica relatórios de testes.
+2. **Android:** configura JDK 21, Android SDK e cache Gradle; executa testes unitários e `assembleDebug`, publicando relatórios e APK debug.
+3. **Publicação:** após os jobs anteriores passarem em um push, Docker Buildx constrói e publica a imagem da API no GHCR com `GITHUB_TOKEN`; o digest imutável é encaminhado aos deploys.
+4. **Staging:** um push em `main`/`master` pode iniciar o deploy se `STAGING_DEPLOY_ENABLED=true` e os secrets estiverem configurados.
+5. **Produção:** o push de uma tag `vX.Y.Z` inicia o deploy no GitHub Environment `production`, onde se recomenda exigir aprovação manual.
+
+O workflow reutilizável [`.github/workflows/deploy-environment.yml`](.github/workflows/deploy-environment.yml) chama [scripts/deploy-ssh.sh](scripts/deploy-ssh.sh), que envia Compose e configuração por SSH e aguarda o healthcheck. O envio da branch deste checkout ao remoto foi negado por falta de permissão; portanto, ainda não há uma execução real do workflow para registrar.
 
 Para visualizar resultados, abra **Actions** no GitHub, selecione a execução e baixe `backend-test-reports`, `android-test-reports` ou `aguiabranca-debug-apk`. O pacote GHCR usa `GITHUB_TOKEN` com permissão `packages: write`; não há token de publicação fixo no repositório.
 
@@ -132,20 +193,30 @@ Em **Settings > Environments**, crie `staging` e `production`. Em cada ambiente,
 
 O servidor deve ter Docker Engine/Compose, `curl`, acesso de saída ao GHCR e portas 8081/8082 livres localmente. O deploy não provisiona o host, TLS, DNS, backup ou firewall. O CI de publicação funciona sem servidores; os jobs de deploy ainda não podem ser considerados realizados até cadastrar esses secrets e obter uma execução saudável.
 
+## Prints do funcionamento
+
+Não há capturas de tela anexadas nesta versão. A evidência local disponível é a saída de `docker compose ps` mostrada na seção de execução local. Para completar esta seção com evidências reais, adicione prints ou links para:
+
+- **CI/CD:** execução bem-sucedida no GitHub Actions, com os jobs backend e Android e a publicação da imagem no GHCR.
+- **Staging:** deploy concluído e resposta saudável de `/actuator/health`.
+- **Produção:** deploy aprovado no Environment `production` e resposta saudável de `/actuator/health`.
+
+**Status:** execução local demonstrada; execução no GitHub Actions, staging e produção pendentes. Não foram incluídos resultados nem imagens simulados. Remova segredos e dados pessoais de qualquer evidência antes de publicá-la.
+
 ### Evidências e limitações
 
 Registre a URL/ID da execução GitHub Actions, resultado dos jobs, relatório de testes e digest GHCR. Para deploy, anexe também a aprovação do Environment de produção, a saída do healthcheck e `docker compose ps`/logs sem dados sensíveis. Os campos para essas evidências estão em [docs/devops-technical.md](docs/devops-technical.md); não há evidência fictícia neste repositório.
 
-Nesta entrega, a sintaxe dos três Compose foi validada localmente, mas a imagem não foi construída nem os containers iniciados porque o Docker Desktop daemon não estava ativo. Maven também não está instalado neste host. Não foram executados workflows GitHub nem deploys; esses itens dependem do runner, registry, servidores e secrets acima.
+Validação atual: o usuário confirmou que `docker compose up --build -d` concluiu e `docker compose ps` mostrou API e MongoDB como `healthy`. O teste Maven local terminou com sucesso; os testes de integração MongoDB que usam Testcontainers foram ignorados naquele ambiente por indisponibilidade do Docker para o processo de testes. O workflow GitHub ainda não foi executado, pois o push da branch foi negado por falta de permissão. Não há deploys de staging ou produção registrados.
 
 ### Checklist de entrega
 
 - [x] Projeto compactado em ZIP com estrutura organizada (geração após esta validação; artefato indicado no relatório final).
-- [ ] Dockerfile funcional (healthcheck e build multi-stage implementados; build não validado por daemon indisponível).
+- [x] Dockerfile multi-stage construído localmente; API iniciada e healthcheck validado pelo Compose.
 - [x] Docker Compose para API/MongoDB, incluindo configurações isoladas de staging e produção.
 - [x] Volumes, redes e variáveis de ambiente configurados; `.env` ignorado.
 - [x] Pipeline com build automático definido.
-- [x] Testes automatizados ligados ao pipeline; execução local pendente.
+- [x] Testes automatizados ligados ao pipeline; execução Maven local concluída (integrações Testcontainers dependem de Docker).
 - [ ] Imagem Docker construída e publicada no GHCR.
 - [ ] Deploy em staging realizado e validado.
 - [ ] Deploy em produção realizado e validado.
